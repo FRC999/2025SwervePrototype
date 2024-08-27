@@ -8,6 +8,9 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants.SwerveChassis;
@@ -17,18 +20,17 @@ import frc.robot.Constants.SwerveConstants.SwerveChassis.SwerveModuleConstantsEn
 public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   private SwerveModuleConstants[] swerveModuleConstants;
-  private CommandSwerveDrivetrain driveChassis;
 
   /* Keep track if we've ever applied the operator perspective before or not */
   private boolean hasAppliedOperatorPerspective = false;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency) {
-        super(driveTrainConstants, OdometryUpdateFrequency, configureSwerveChassis());
+  public DriveSubsystem(double OdometryUpdateFrequency) {
+        super(TunerConstants.DrivetrainConstants, OdometryUpdateFrequency, configureSwerveChassis());
     }
 
-  public DriveSubsystem(SwerveDrivetrainConstants driveTrainConstants) {
-        super(driveTrainConstants, configureSwerveChassis());
+  public DriveSubsystem() {
+        super(TunerConstants.DrivetrainConstants, configureSwerveChassis());
     }
 
   public static SwerveModuleConstants[] configureSwerveChassis() {
@@ -69,13 +71,22 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
             -SwerveChassis.TRACK_WIDTH / 2.0,
             SwerveModuleConstantsEnum.MOD3.isAngleMotorInverted())
     };
-
-    public static final CommandSwerveDrivetrain DriveTrain = new CommandSwerveDrivetrain(DrivetrainConstants, FrontLeft,
-        FrontRight, BackLeft, BackRight);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    /* Periodically try to apply the operator perspective */
+        /* If we haven't applied the operator perspective before, then we should apply it regardless of DS state */
+        /* This allows us to correct the perspective in case the robot code restarts mid-match */
+        /* Otherwise, only check and apply the operator perspective if the DS is disabled */
+        /* This ensures driving behavior doesn't change until an explicit disable event occurs during testing*/
+        if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
+            DriverStation.getAlliance().ifPresent((allianceColor) -> {
+                this.setOperatorPerspectiveForward(
+                        allianceColor == Alliance.Red ? SwerveChassis.redAlliancePerspectiveRotation
+                                : SwerveChassis.blueAlliancePerspectiveRotation);
+                hasAppliedOperatorPerspective = true;
+            });
+        }
   }
 }
