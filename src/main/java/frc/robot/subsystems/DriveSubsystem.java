@@ -6,7 +6,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,6 +25,11 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   /* Keep track if we've ever applied the operator perspective before or not */
   private boolean hasAppliedOperatorPerspective = false;
+
+    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+      .withDeadband(SwerveChassis.MaxSpeed * 0.1).withRotationalDeadband(SwerveChassis.MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
+                                                               // driving in open loop
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(double OdometryUpdateFrequency) {
@@ -71,6 +78,14 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
             -SwerveChassis.TRACK_WIDTH / 2.0,
             SwerveModuleConstantsEnum.MOD3.isAngleMotorInverted())
     };
+  }
+
+  public void drive(double xVelocity_m_per_s, double yVelocity_m_per_s, double omega_rad_per_s) {
+    this.setControl(
+      drive.withVelocityX(xVelocity_m_per_s)
+        .withVelocityY(yVelocity_m_per_s)
+        .withRotationalRate(omega_rad_per_s)
+    );
   }
 
   @Override
