@@ -139,9 +139,34 @@ public final class Constants {
       public static double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
       public static double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
+      /**
+       * Drive Motor PID. Assumed to be the same for all drive motors
+       * These PID constants are only used for auto trajectory driving, and not
+       * teleop.
+       * We found that changing them a bit will not have a substantial impact on the
+       * trajectory with PathPlanner
+       * even if a trajectory includes a holonomic component.
+       */
+      public static final double DRIVE_CHASSIS_KP = 0.6;
+      public static final double DRIVE_CHASSIS_KI = 0.00;
+      public static final double DRIVE_CHASSIS_KD = 0.7;
+
+      /**
+       * Angle Motor PID. Assumed to be the same for all angle motors
+       * These PID constants are only used for auto trajectory driving, and not
+       * teleop.
+       * Changes to these constants will have a substantial impact on the precision of
+       * your
+       * trajectory if it includes holonomic rotation.
+       * Make sure to test the values and adjust them as needed for your robot.
+       */
+      public static final double ANGLE_CHASSIS_KP = 6.25;
+      public static final double ANGLE_CHASSIS_KI = 0.4;
+      public static final double ANGLE_CHASSIS_KD = 0.7;
+      
       public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+          .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
       /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
       public static final Rotation2d blueAlliancePerspectiveRotation = Rotation2d.fromDegrees(0);
@@ -219,151 +244,150 @@ public final class Constants {
     }
   }
 
-  	/**
-	 * Controller-related constants.
-	 * Here we define port numbers, axis, deadbands, button numbers and various
-	 * ability flags, such as use of the cube driving
-	 */
-	public static final class OIConstants {
-		public static final int driverControllerPort = 0;
+  /**
+   * Controller-related constants.
+   * Here we define port numbers, axis, deadbands, button numbers and various
+   * ability flags, such as use of the cube driving
+   */
+  public static final class OIConstants {
+    public static final int driverControllerPort = 0;
 
-		public static final int bblPort = 4;
-		public static final int bbrPort = 3;
+    public static final int bblPort = 4;
+    public static final int bbrPort = 3;
 
-		public static final int driverInterfaceSwitchButton = 1;
+    public static final int driverInterfaceSwitchButton = 1;
 
-		public static final int robotCentricButton = 5; // XBOX L1 button
+    public static final int robotCentricButton = 5; // XBOX L1 button
 
-		public static final ControllerDeviceType driverInterfaceType = ControllerDeviceType.XBOX_ONEDRIVE;
+    public static final ControllerDeviceType driverInterfaceType = ControllerDeviceType.XBOX_ONEDRIVE;
 
-		public static final int CALIBRATION_JOYSTICK_SLIDER_AXLE = 3;
+    public static final int CALIBRATION_JOYSTICK_SLIDER_AXLE = 3;
 
-		public static enum ControllerDeviceType {
-			LOGITECH,
-			PS5,
-			XBOX, // RightJ F/B, LeftJ L/R, L2/R2 - rotation
-			XBOX_ONEDRIVE // RIghtJ F/B/L/R, LeftJ - rotation
-		}
+    public static enum ControllerDeviceType {
+      LOGITECH,
+      PS5,
+      XBOX, // RightJ F/B, LeftJ L/R, L2/R2 - rotation
+      XBOX_ONEDRIVE // RIghtJ F/B/L/R, LeftJ - rotation
+    }
 
-		public static enum ControllerDevice {
-			DRIVESTICK(
-					0, // Port Number
-					ControllerDeviceType.LOGITECH,
-					0.02, // deadband X
-					0.02, // deadband Y
-					0.02, // deadband Omega
-					true, // cubeControllerLeft
-					true // cubeControllerRight
-			),
+    public static enum ControllerDevice {
+      DRIVESTICK(
+          0, // Port Number
+          ControllerDeviceType.LOGITECH,
+          0.02, // deadband X
+          0.02, // deadband Y
+          0.02, // deadband Omega
+          true, // cubeControllerLeft
+          true // cubeControllerRight
+      ),
 
-			// DRIVESTICK1,2,3 are used only for GPM calibration
-			DRIVESTICK1(
-					1, // Port Number
-					ControllerDeviceType.LOGITECH,
-					0.02, // deadband X
-					0.02, // deadband Y
-					0.02, // deadband Omega
-					true, // cubeControllerLeft
-					true // cubeControllerRight
-			),
+      // DRIVESTICK1,2,3 are used only for GPM calibration
+      DRIVESTICK1(
+          1, // Port Number
+          ControllerDeviceType.LOGITECH,
+          0.02, // deadband X
+          0.02, // deadband Y
+          0.02, // deadband Omega
+          true, // cubeControllerLeft
+          true // cubeControllerRight
+      ),
 
-			DRIVESTICK2(
-					2, // Port Number
-					ControllerDeviceType.LOGITECH,
-					0.02, // deadband X
-					0.02, // deadband Y
-					0.02, // deadband Omega
-					true, // cubeControllerLeft
-					true // cubeControllerRight
-			),
+      DRIVESTICK2(
+          2, // Port Number
+          ControllerDeviceType.LOGITECH,
+          0.02, // deadband X
+          0.02, // deadband Y
+          0.02, // deadband Omega
+          true, // cubeControllerLeft
+          true // cubeControllerRight
+      ),
 
-			DRIVESTICK3(
-					3, // Port Number
-					ControllerDeviceType.LOGITECH,
-					0.02, // deadband X
-					0.02, // deadband Y
-					0.02, // deadband Omega
-					true, // cubeControllerLeft
-					true // cubeControllerRight
-			),
+      DRIVESTICK3(
+          3, // Port Number
+          ControllerDeviceType.LOGITECH,
+          0.02, // deadband X
+          0.02, // deadband Y
+          0.02, // deadband Omega
+          true, // cubeControllerLeft
+          true // cubeControllerRight
+      ),
 
-			TURNSTICK( // Controls the rotation of the swervebot
-					2, // Port Number
-					ControllerDeviceType.LOGITECH,
-					0.02, // deadband X
-					0.02, // deadband Y
-					0.02, // deadband Omega
-					true, // cubeControllerLeft
-					true // cubeControllerRight
-			),
+      TURNSTICK( // Controls the rotation of the swervebot
+          2, // Port Number
+          ControllerDeviceType.LOGITECH,
+          0.02, // deadband X
+          0.02, // deadband Y
+          0.02, // deadband Omega
+          true, // cubeControllerLeft
+          true // cubeControllerRight
+      ),
 
-			XBOX_CONTROLLER(
-					5, // Port Number for Xbox controller
-					ControllerDeviceType.XBOX,
-					0.03, // deadband X for Xbox
-					0.03, // deadband Y for Xbox //TODO: ALL DEADBAND FOR XBOX IS PLACEHOLDER
-					0.03, // deadband Omega for Xbox
-					false, // No cube controller configuration for Xbox yet
-					false),
+      XBOX_CONTROLLER(
+          5, // Port Number for Xbox controller
+          ControllerDeviceType.XBOX,
+          0.03, // deadband X for Xbox
+          0.03, // deadband Y for Xbox //TODO: ALL DEADBAND FOR XBOX IS PLACEHOLDER
+          0.03, // deadband Omega for Xbox
+          false, // No cube controller configuration for Xbox yet
+          false),
 
-			XBOX_CONTROLLER_GPM(
-					4,  // Port Number for Xbox controller
-					ControllerDeviceType.XBOX,
-					0.03, // deadband X for Xbox
-					0.03, // deadband Y for Xbox //TODO: ALL DEADBAND FOR XBOX IS PLACEHOLDER
-					0.03, // deadband Omega for Xbox
-					false, // No cube controller configuration for Xbox yet
-					false);
+      XBOX_CONTROLLER_GPM(
+          4, // Port Number for Xbox controller
+          ControllerDeviceType.XBOX,
+          0.03, // deadband X for Xbox
+          0.03, // deadband Y for Xbox //TODO: ALL DEADBAND FOR XBOX IS PLACEHOLDER
+          0.03, // deadband Omega for Xbox
+          false, // No cube controller configuration for Xbox yet
+          false);
 
+      private ControllerDeviceType controllerDeviceType;
+      private int portNumber;
+      private double deadbandX;
+      private double deadbandY;
+      private double deadbandOmega;
+      private boolean cubeControllerLeftStick;
+      private boolean cubeControllerRightStick;
 
-			private ControllerDeviceType controllerDeviceType;
-			private int portNumber;
-			private double deadbandX;
-			private double deadbandY;
-			private double deadbandOmega;
-			private boolean cubeControllerLeftStick;
-			private boolean cubeControllerRightStick;
+      ControllerDevice(int pn, ControllerDeviceType cdt, double dx, double dy, double dm, boolean ccL,
+          boolean ccR) {
+        this.portNumber = pn;
+        this.controllerDeviceType = cdt;
+        this.deadbandX = dx;
+        this.deadbandY = dy;
+        this.deadbandOmega = dm;
+        this.cubeControllerLeftStick = ccL;
+        this.cubeControllerRightStick = ccR;
+      }
 
-			ControllerDevice(int pn, ControllerDeviceType cdt, double dx, double dy, double dm, boolean ccL,
-					boolean ccR) {
-				this.portNumber = pn;
-				this.controllerDeviceType = cdt;
-				this.deadbandX = dx;
-				this.deadbandY = dy;
-				this.deadbandOmega = dm;
-				this.cubeControllerLeftStick = ccL;
-				this.cubeControllerRightStick = ccR;
-			}
+      public ControllerDeviceType getControllerDeviceType() {
+        return controllerDeviceType;
+      }
 
-			public ControllerDeviceType getControllerDeviceType() {
-				return controllerDeviceType;
-			}
+      public int getPortNumber() {
+        return portNumber;
+      }
 
-			public int getPortNumber() {
-				return portNumber;
-			}
+      public double getDeadbandX() {
+        return deadbandX;
+      }
 
-			public double getDeadbandX() {
-				return deadbandX;
-			}
+      public double getDeadbandY() {
+        return deadbandY;
+      }
 
-			public double getDeadbandY() {
-				return deadbandY;
-			}
+      public double getDeadbandOmega() {
+        return deadbandOmega;
+      }
 
-			public double getDeadbandOmega() {
-				return deadbandOmega;
-			}
+      public boolean isCubeControllerLeftStick() {
+        return cubeControllerLeftStick;
+      }
 
-			public boolean isCubeControllerLeftStick() {
-				return cubeControllerLeftStick;
-			}
-
-			public boolean isCubeControllerRightStick() {
-				return cubeControllerRightStick;
-			}
-		}
-	}
+      public boolean isCubeControllerRightStick() {
+        return cubeControllerRightStick;
+      }
+    }
+  }
 
   public static class IMUConstants {
     public static final int kPigeonId = 15;

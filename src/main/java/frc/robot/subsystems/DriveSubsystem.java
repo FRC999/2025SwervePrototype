@@ -10,7 +10,9 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -87,6 +89,28 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
         .withRotationalRate(omega_rad_per_s)
     );
   }
+
+    /** 
+   * Field Centric Pose of the chassis
+   * We get it from odometry, rather than sensors. That means commands that use it must ensure that
+   * odometry was properly updated.
+  */
+  public Pose2d getPose() {
+    return this.getState().Pose;
+  }
+
+  public ChassisSpeeds getChassisSpeeds() {
+    return this.getState().speeds;
+  }
+
+  public void driveWithChassisSpeeds(ChassisSpeeds speeds) {
+    drive(
+      speeds.vxMetersPerSecond,
+      speeds.vyMetersPerSecond,
+      speeds.omegaRadiansPerSecond
+    );
+  }
+
 
   @Override
   public void periodic() {
