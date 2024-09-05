@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
@@ -19,7 +21,10 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants.SwerveChassis;
 import frc.robot.Constants.SwerveConstants.TunerConstants;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.SwerveConstants.SwerveChassis.SwerveModuleConstantsEnum;
+import frc.robot.Constants.SwerveConstants.SwerveChassis;
 
 public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
 
@@ -33,13 +38,19 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
 
+  Pigeon2 imu;
+  private double trajectoryAdjustmentIMU; // This is the value we need to adjust the IMU by after Trajectory
+  // is completed
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(double OdometryUpdateFrequency) {
         super(TunerConstants.DrivetrainConstants, OdometryUpdateFrequency, configureSwerveChassis());
+        imu = this.getPigeon2();
     }
 
   public DriveSubsystem() {
         super(TunerConstants.DrivetrainConstants, configureSwerveChassis());
+        imu = this.getPigeon2();
     }
 
   public static SwerveModuleConstants[] configureSwerveChassis() {
@@ -111,6 +122,214 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
     );
   }
 
+  public TalonFX getDriveMotor(int modNum){
+    return this.getModule(modNum).getDriveMotor();
+  }
+
+  public TalonFX getTurnMotor(int modNum){
+    return this.getModule(modNum).getSteerMotor();
+  }
+
+  public double getDriveEncoder(int modNum){
+    return this.getModule(modNum).getDriveMotor().getRotorPosition().getValueAsDouble();
+  }
+
+  public double getDriveEncoderSI(int modNum){
+    return this.getModule(modNum).getDriveMotor().getRotorPosition().getValueAsDouble()
+      *SwerveChassis.metersPerRotationFX;
+  }
+
+  public double getTurnEncoder(int modNum){
+    return this.getModule(modNum).getSteerMotor().getRotorPosition().getValueAsDouble();
+  }
+
+  public double getDriveVelocity(int modNum){
+    return this.getModule(modNum).getDriveMotor().getRotorVelocity().getValueAsDouble();
+  }
+
+ public double getDriveVelocitySI(int modNum){
+    return this.getModule(modNum).getDriveMotor().getRotorVelocity().getValueAsDouble()
+      *SwerveChassis.metersPerRotationFX;
+  } 
+
+  public double getTurnVelocity(int modNum){
+    return this.getModule(modNum).getSteerMotor().getRotorVelocity().getValueAsDouble();
+  }
+
+  public double getCancoderAbsolute(int modNum){
+    return this.getModule(modNum).getCANcoder().getAbsolutePosition().getValueAsDouble();
+  }
+
+  public double getCancoderRelative(int modNum){
+    return this.getModule(modNum).getCANcoder().getPosition().getValueAsDouble();
+  }
+
+   public double getCancoderAbsoluteSI(int modNum){
+    return this.getModule(modNum).getCANcoder().getAbsolutePosition().getValueAsDouble()*360.0;
+  }
+
+  public double getCancoderRelativeSI(int modNum){
+    return (this.getModule(modNum).getCANcoder().getPosition().getValueAsDouble()
+            - getModuleEnum(modNum).getAngleOffset())*360.0;
+  }
+
+  public SwerveModuleConstantsEnum getModuleEnum(int modNum){
+    switch(modNum){
+      case 0: 
+        return SwerveModuleConstantsEnum.MOD0;
+      case 1: 
+        return SwerveModuleConstantsEnum.MOD1;
+      case 2:
+        return SwerveModuleConstantsEnum.MOD2;
+      default:
+        return SwerveModuleConstantsEnum.MOD3;
+    }
+  }
+
+  /**
+   * Note that all IMU methods that take or return values should do so in SI
+   * units.
+   */
+
+  public double getPitch() {
+    // double[] ypr = new double[3];
+    // pigeon2.getYawPitchRoll(ypr);
+    // return ypr[1];
+
+    // Front UP - positive Pitch
+    return -imu.getPitch().getValueAsDouble();
+  }
+
+  /**
+   * Gets the roll of the robot (Y axis rotation) (roll is the leaning around the
+   * axis that goes straight forward)
+   * 
+   * @return
+   */
+  public double getRoll() {
+    // double[] ypr = new double[3];
+    // pigeon2.getYawPitchRoll(ypr);
+    // return ypr[2];
+
+    // Left UP - positive Roll
+    return imu.getRoll().getValueAsDouble();
+  }
+
+  /**
+   * Gets the yaw of the robot (Z axis rotation) (yaw is the direction that the
+   * robot is facing around an axis that shoots straight up)
+   * 
+   * @return
+   */
+  public double getYaw() {
+    // double[] ypr = new double[3];
+    // pigeon2.getYawPitchRoll(ypr);
+    // System.out.println(ypr[0]);
+    // return ypr[0];
+
+    return imu.getYaw().getValueAsDouble(); // With Pigeon2 this method returns values in degrees
+  }
+
+  public Rotation2d getYawRotation2d() {
+    return Rotation2d.fromDegrees(getYaw());
+  }
+
+  /**
+   * Zeroes the yaw of the robot
+   * 
+   * @return The previous yaw
+   */
+  public double zeroYaw() {
+    double previousYaw = getYaw();
+    if (RobotContainer.isAllianceRed && RobotContainer.isReversingControllerAndIMUForRed) {
+      imu.setYaw(180.0);
+    } else {
+      imu.setYaw(0);
+    }
+    return previousYaw;
+  }
+
+  public double setYaw(double y) {
+    double previousYaw = getYaw();
+    imu.setYaw(y);
+    return previousYaw;
+  }
+
+  public Rotation2d getRotation2d() {
+    return imu.getRotation2d();
+  }
+
+  /** Zeroes the heading of the robot. */
+  public void zeroHeading() {
+    if (RobotContainer.isAllianceRed && RobotContainer.isReversingControllerAndIMUForRed) {
+      imu.setYaw(180.0);
+    } else {
+      imu.setYaw(0);
+    }
+    System.out.println("Yaw and Fused Heading set");
+  }
+
+  /**
+   * Returns the heading of the robot.
+   *
+   * @return the robot's heading in degrees, from -180 to 180 in Rotation2d format
+   */
+  public Rotation2d getHeading() {
+    return imu.getRotation2d();
+  }
+
+  /**
+   * Returns the turn rate of the robot.
+   *
+   * @return The turn rate of the robot, in degrees per second
+   */
+  public double getTurnRate() {
+    return -imu.getRate();
+  }
+
+  /**
+   * This method is used when we want to "snap" the chassis to a trajectory start,
+   * meaning
+   * assuming that the robot is at the starting point of the trajectory.
+   * Here we remember starting Yaw before trajectory so it can be restored
+   * back after trajectory
+   * 
+   * @param y - starting Yaw of the trajectory
+   * @return - old value of the Yaw (we do not currently use it)
+   */
+  public double setYawForTrajectory(double y) {
+    trajectoryAdjustmentIMU = getYaw() - y;
+
+    // alex test
+    // System.out.println("---- Trajectory AdjustmentIMU: "+ trajectoryAdjustmentIMU
+    // + " Real: "+ RobotContainer.imuSubsystem.getYaw()) ;
+
+    return setYaw(y); // our own setYaw that returns old angle
+  }
+
+  /**
+   * Once the trajectory is done, we want to readjust the Yaw considering the
+   * value that we "remember", so
+   * the field-centric drive axis will not change. That may allow one to drive
+   * automated trajectories in teleop
+   * without losing the Yaw direction.
+   */
+  public void restoreYawAfterTrajectory() {
+    System.out.println(
+        "Restoring original IMU after trajectory " + (getYaw() + trajectoryAdjustmentIMU));
+    imu.setYaw(getYaw() + trajectoryAdjustmentIMU);
+  }
+
+  /**
+   * Set odometry to a specified field-centric Pose2d
+   * You may need to do so for the trajectory driving, if you want the robot to assume being at the
+   * start of the trajectory.
+   * Be aware that on-going odometry updates use IMU. So, your odometry yaw may change incorrectly
+   * later if the current yaw is not reset properly on the IMU first.
+   */
+  public void resetOdometry(Pose2d pose) {
+    this.seedFieldRelative(pose);
+  }
 
   @Override
   public void periodic() {

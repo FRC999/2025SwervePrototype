@@ -139,6 +139,13 @@ public final class Constants {
       public static double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
       public static double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
+      // Customize the following values to your prototype
+			public static final double metersPerRotationFX = ( (6.75/6.12)*(107.66/100.0)*(1.0 / 48622.0) ) * 2048.0; // measure this number on the robot - remeasure on carpet
+      // drive motor only
+      public static final double degreePerRotationFX = (1.0 / 122.11575) * 2048; // Angle motor only
+      // On our swerve prototype 1 angular rotation of
+      // the wheel = 1 full rotation of the encoder
+
       /**
        * Drive Motor PID. Assumed to be the same for all drive motors
        * These PID constants are only used for auto trajectory driving, and not
@@ -163,7 +170,7 @@ public final class Constants {
       public static final double ANGLE_CHASSIS_KP = 6.25;
       public static final double ANGLE_CHASSIS_KI = 0.4;
       public static final double ANGLE_CHASSIS_KD = 0.7;
-      
+
       public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
           .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage);

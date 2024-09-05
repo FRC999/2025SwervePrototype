@@ -17,14 +17,16 @@ import frc.robot.RobotContainer;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class RunTrajectorySequenceRobotAtStartPoint extends SequentialCommandGroup {
   /** Creates a new RunTrajectorySequenceRobotAtStartPoint. */
+
+  PathPlannerPath trajectoryPath;
+
   public RunTrajectorySequenceRobotAtStartPoint() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands();
   }
 
-  public RunTrajectorySequenceRobotAtStartPoint(PathPlannerPath traj, double maxVelocity, double maxAngularVelocity,
-      boolean reversed) {
+  public RunTrajectorySequenceRobotAtStartPoint(PathPlannerPath traj, double maxVelocity, double maxAngularVelocity) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
@@ -35,9 +37,9 @@ public class RunTrajectorySequenceRobotAtStartPoint extends SequentialCommandGro
         // new InstantCommand(RobotContainer.driveSubsystem::zeroDriveEncoders),
         new PrintCommand("****Starting trajectory****"),
         // new WaitCommand(0.4),
-        new InstantCommand(() -> RobotContainer.imuSubsystem
-            .setYawForTrajectory(trajectoryPath.getInitialHolonomicPose().getRotation().getDegrees())),
-        new InstantCommand(() -> RobotContainer.driveSubsystem.resetOdometry(trajectoryPath.getInitialHolonomicPose())),
+        new InstantCommand(() -> RobotContainer.driveSubsystem
+            .setYawForTrajectory(trajectoryPath.getPreviewStartingHolonomicPose().getRotation().getDegrees())),
+        new InstantCommand(() -> RobotContainer.driveSubsystem.resetOdometry(trajectoryPath.getPreviewStartingHolonomicPose())),
         // new PrintCommand(
         // "START IX:" + trajectoryPath.getInitialPose().getX()+
         // " IY:" + trajectoryPath.getInitialPose().getY()+
@@ -46,7 +48,7 @@ public class RunTrajectorySequenceRobotAtStartPoint extends SequentialCommandGro
         new AutonomousTrajectoryRioCommand(trajectoryPath)
         //, // Run a trajectory
         .finallyDo (
-          () -> RobotContainer.imuSubsystem.restoreYawAfterTrajectory()
+          () -> RobotContainer.driveSubsystem.restoreYawAfterTrajectory()
           //new InstantCommand(() -> RobotContainer.imuSubsystem.restoreYawAfterTrajectory())
         ),
         new PrintCommand("****End trajectory****"));

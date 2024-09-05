@@ -10,6 +10,8 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,6 +29,9 @@ public class RobotContainer {
   public static Controller xboxDriveController;
 
   public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
+
+  public static boolean isAllianceRed = false;
+  public static boolean isReversingControllerAndIMUForRed = true;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -64,6 +69,25 @@ public class RobotContainer {
   private void configureDriverInterface(){
     xboxDriveController = new Controller(ControllerDevice.XBOX_CONTROLLER);
   }
+
+    // Alliance color determination
+  public void checkAllianceColor() {
+    SmartDashboard.putString("AllianceColor", DriverStation.getAlliance().toString());
+  }
+
+  public static void setIfAllianceRed() {
+    var alliance = DriverStation.getAlliance();
+    if (! alliance.isPresent()) {
+        System.out.println("=== !!! Alliance not present !!! === Staying with the BLUE system");
+    } else {
+        isAllianceRed = alliance.get() == DriverStation.Alliance.Red;
+        System.out.println("*** RED Alliance: "+isAllianceRed);
+    }
+  }
+  public static void toggleReversingControllerAndIMUForRed() {
+    isReversingControllerAndIMUForRed = !isReversingControllerAndIMUForRed;
+  }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
