@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OIConstants.ControllerDevice;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.DriveManuallyCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -34,8 +35,8 @@ public class RobotContainer {
   public static boolean isReversingControllerAndIMUForRed = true;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  // private final CommandXboxController m_driverController =
+  //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -43,6 +44,12 @@ public class RobotContainer {
     configureBindings();
     // Configure driver interface - binding joystick objects to port numbers
     configureDriverInterface();
+
+     driveSubsystem.setDefaultCommand(
+        new DriveManuallyCommand(
+            () -> getDriverXAxis(),
+            () -> getDriverYAxis(),
+            () -> getDriverOmegaAxis()));
   }
 
 
@@ -63,7 +70,7 @@ public class RobotContainer {
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
   }
 
   private void configureDriverInterface(){
@@ -86,6 +93,22 @@ public class RobotContainer {
   }
   public static void toggleReversingControllerAndIMUForRed() {
     isReversingControllerAndIMUForRed = !isReversingControllerAndIMUForRed;
+  }
+
+  // Driver preferred controls
+  private double getDriverXAxis() {
+    //return -xboxController.getLeftStickY();
+    return -xboxDriveController.getRightStickY();
+  }
+
+  private double getDriverYAxis() {
+    //return -xboxController.getLeftStickX();
+    return -xboxDriveController.getRightStickX();
+  }
+
+  private double getDriverOmegaAxis() {
+    //return -xboxController.getLeftStickOmega();
+    return -xboxDriveController.getLeftStickX() * 0.6;
   }
 
 

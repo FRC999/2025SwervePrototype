@@ -49,10 +49,15 @@ public class DriveManuallyCommand extends Command {
 		double yInput = mVySupplier.getAsDouble();
 		double omegaInput = mOmegaSupplier.getAsDouble();
 
+    System.out.println("X: " + xInput + " Y: " + yInput + " Z: " + omegaInput);
+
+
     RobotContainer.driveSubsystem.drive(
-      xInput * SwerveChassis.MaxSpeed,
+     // xInput * SwerveChassis.MaxSpeed,
+     0,
       yInput * SwerveChassis.MaxSpeed,
-      omegaInput * SwerveChassis.MaxAngularRate
+      0
+    //  omegaInput * SwerveChassis.MaxAngularRate
     );
   }
 

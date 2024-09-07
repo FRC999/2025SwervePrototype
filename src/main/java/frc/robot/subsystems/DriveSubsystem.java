@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants.SwerveChassis;
@@ -51,6 +52,8 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
   public DriveSubsystem() {
         super(TunerConstants.DrivetrainConstants, configureSwerveChassis());
         imu = this.getPigeon2();
+
+        this.registerTelemetry(this::telemeterize);
     }
 
   public static SwerveModuleConstants[] configureSwerveChassis() {
@@ -329,6 +332,14 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
    */
   public void resetOdometry(Pose2d pose) {
     this.seedFieldRelative(pose);
+  }
+
+  /* Accept the swerve drive state and telemeterize it to smartdashboard */
+  public void telemeterize(SwerveDriveState state) {
+    SmartDashboard.putString("P:", state.Pose.toString());
+    SmartDashboard.putString("M0A:", state.ModuleStates[0].toString());
+    SmartDashboard.putString("M1A:", state.ModuleStates[1].toString());
+
   }
 
   @Override

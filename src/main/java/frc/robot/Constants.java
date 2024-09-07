@@ -39,9 +39,9 @@ public final class Constants {
 
   public static class SwerveConstants {
     public static class TunerConstants {
-      public static final double steerGainsKP = 100;
+      public static final double steerGainsKP = 0.5;
       public static final double steerGainsKI = 0;
-      public static final double steerGainsKD = 0.2;
+      public static final double steerGainsKD = 0.0;
       public static final double steerGainsKS = 0;
       public static final double steerGainsKV = 1.5;
       public static final double steerGainsKA = 0;
@@ -185,31 +185,35 @@ public final class Constants {
             1, // driveMotorID
             2, // angleMotorID
             20, // CanCoder Id
+            // -0.296142578125, // angleOffset of cancoder to mark zero-position
             -0.296142578125, // angleOffset of cancoder to mark zero-position
-            true // Inversion for angle motor
+            false // Inversion for angle motor
         ),
         MOD1( // Front Right
             3, // driveMotorID
             4, // angleMotorID
             21, // CanCoder Id
-            0.041015625, // angleOffset of cancoder to mark zero-position
-            true // Inversion for angle motor
+            // 0.041015625, // angleOffset of cancoder to mark zero-position
+            0.041015625, //angleOffset of cancoder to mark zero-position
+            false // Inversion for angle motor
 
         ),
         MOD2( // Back Left
             5, // driveMotorID
             6, // angleMotorID
             22, // CanCoder Id
-            -0.296142578125, // angleOffset of cancoder to mark zero-position
-            true // Inversion for angle motor
+            //-0.296142578125, // angleOffset of cancoder to mark zero-position
+            0.326171875, // angleOffset of cancoder to mark zero-position
+            false// Inversion for angle motor
 
         ),
         MOD3( // Back Right
-            1, // driveMotorID
-            2, // angleMotorID
-            20, // CanCoder Id
-            0.326171875, // angleOffset of cancoder to mark zero-position
-            true // Inversion for angle motor
+            7, // driveMotorID
+            8, // angleMotorID
+            23, // CanCoder Id
+            // 0.326171875, // angleOffset of cancoder to mark zero-position
+            0.0576171875, // angleOffset of cancoder to mark zero-position
+            false // Inversion for angle motor
         );
 
         private int driveMotorID;
