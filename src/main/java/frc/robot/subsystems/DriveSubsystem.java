@@ -65,7 +65,9 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
             SwerveModuleConstantsEnum.MOD0.getAngleOffset(),
             SwerveChassis.WHEEL_BASE / 2.0,
             SwerveChassis.TRACK_WIDTH / 2.0,
-            SwerveModuleConstantsEnum.MOD0.isAngleMotorInverted()),
+            SwerveModuleConstantsEnum.MOD0.isDriveMotorInverted())
+            .withSteerMotorInverted(SwerveModuleConstantsEnum.MOD0.isAngleMotorInverted())
+            ,
 
         TunerConstants.ConstantCreator.createModuleConstants(
             SwerveModuleConstantsEnum.MOD1.getAngleMotorID(),
@@ -74,7 +76,9 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
             SwerveModuleConstantsEnum.MOD1.getAngleOffset(),
             SwerveChassis.WHEEL_BASE / 2.0,
             -SwerveChassis.TRACK_WIDTH / 2.0,
-            SwerveModuleConstantsEnum.MOD1.isAngleMotorInverted()),
+            SwerveModuleConstantsEnum.MOD1.isDriveMotorInverted())
+            .withSteerMotorInverted(SwerveModuleConstantsEnum.MOD1.isAngleMotorInverted())
+            ,
 
         TunerConstants.ConstantCreator.createModuleConstants(
             SwerveModuleConstantsEnum.MOD2.getAngleMotorID(),
@@ -83,7 +87,9 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
             SwerveModuleConstantsEnum.MOD2.getAngleOffset(),
             -SwerveChassis.WHEEL_BASE / 2.0,
             SwerveChassis.TRACK_WIDTH / 2.0,
-            SwerveModuleConstantsEnum.MOD2.isAngleMotorInverted()),
+            SwerveModuleConstantsEnum.MOD2.isDriveMotorInverted())
+            .withSteerMotorInverted(SwerveModuleConstantsEnum.MOD2.isAngleMotorInverted())
+            ,
 
         TunerConstants.ConstantCreator.createModuleConstants(
             SwerveModuleConstantsEnum.MOD3.getAngleMotorID(),
@@ -92,7 +98,8 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
             SwerveModuleConstantsEnum.MOD3.getAngleOffset(),
             -SwerveChassis.WHEEL_BASE / 2.0,
             -SwerveChassis.TRACK_WIDTH / 2.0,
-            SwerveModuleConstantsEnum.MOD3.isAngleMotorInverted())
+            SwerveModuleConstantsEnum.MOD3.isDriveMotorInverted())
+            .withSteerMotorInverted(SwerveModuleConstantsEnum.MOD3.isAngleMotorInverted())
     };
   }
 

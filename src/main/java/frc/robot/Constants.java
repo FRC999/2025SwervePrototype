@@ -39,7 +39,7 @@ public final class Constants {
 
   public static class SwerveConstants {
     public static class TunerConstants {
-      public static final double steerGainsKP = 0.5;
+      public static final double steerGainsKP = 100;
       public static final double steerGainsKI = 0;
       public static final double steerGainsKD = 0.0;
       public static final double steerGainsKS = 0;
@@ -187,7 +187,8 @@ public final class Constants {
             20, // CanCoder Id
             // -0.296142578125, // angleOffset of cancoder to mark zero-position
             -0.296142578125, // angleOffset of cancoder to mark zero-position
-            false // Inversion for angle motor
+            false, // Inversion for drive motor
+            true // Inversion for angle motor
         ),
         MOD1( // Front Right
             3, // driveMotorID
@@ -195,8 +196,8 @@ public final class Constants {
             21, // CanCoder Id
             // 0.041015625, // angleOffset of cancoder to mark zero-position
             0.041015625, //angleOffset of cancoder to mark zero-position
-            false // Inversion for angle motor
-
+            true, // Inversion for drive motor
+            true // Inversion for angle motor
         ),
         MOD2( // Back Left
             5, // driveMotorID
@@ -204,8 +205,8 @@ public final class Constants {
             22, // CanCoder Id
             //-0.296142578125, // angleOffset of cancoder to mark zero-position
             0.326171875, // angleOffset of cancoder to mark zero-position
-            false// Inversion for angle motor
-
+            false, // Inversion for drive motor
+            true // Inversion for angle motor
         ),
         MOD3( // Back Right
             7, // driveMotorID
@@ -213,22 +214,26 @@ public final class Constants {
             23, // CanCoder Id
             // 0.326171875, // angleOffset of cancoder to mark zero-position
             0.0576171875, // angleOffset of cancoder to mark zero-position
-            false // Inversion for angle motor
+            true, // Inversion for drive motor
+            true // Inversion for angle motor
         );
 
         private int driveMotorID;
         private int angleMotorID;
-        private double angleOffset;
-        private boolean angleMotorInverted;
         private int cancoderID;
+        private double angleOffset;
+        private boolean driveMotorInverted;
+        private boolean angleMotorInverted;
+
 
         SwerveModuleConstantsEnum(int d, int a, int c, double o,
-            boolean ai) {
+            boolean di, boolean ai) {
           this.driveMotorID = d;
           this.angleMotorID = a;
-          this.angleOffset = o;
-          this.angleMotorInverted = ai;
           this.cancoderID = c;
+          this.angleOffset = o;
+          this.driveMotorInverted = di;
+          this.angleMotorInverted = ai;
         }
 
         public int getDriveMotorID() {
@@ -241,6 +246,10 @@ public final class Constants {
 
         public double getAngleOffset() {
           return angleOffset;
+        }
+
+        public boolean isDriveMotorInverted() {
+          return driveMotorInverted;
         }
 
         public boolean isAngleMotorInverted() {
