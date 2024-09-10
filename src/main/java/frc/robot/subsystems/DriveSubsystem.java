@@ -308,7 +308,7 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
    * @return - old value of the Yaw (we do not currently use it)
    */
   public double setYawForTrajectory(double y) {
-    trajectoryAdjustmentIMU = getYaw() - y;
+    trajectoryAdjustmentIMU = this.getPose().getRotation().getDegrees() - y;
 
     // alex test
     // System.out.println("---- Trajectory AdjustmentIMU: "+ trajectoryAdjustmentIMU
@@ -326,8 +326,10 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
    */
   public void restoreYawAfterTrajectory() {
     System.out.println(
-        "Restoring original IMU after trajectory " + (getYaw() + trajectoryAdjustmentIMU));
-    imu.setYaw(getYaw() + trajectoryAdjustmentIMU);
+        "Restoring original IMU after trajectory " + (this.getPose().getRotation().getDegrees() + trajectoryAdjustmentIMU));
+    this.seedFieldRelative(
+      new Pose2d(0, 0, 
+        new Rotation2d(this.getPose().getRotation().getDegrees() + trajectoryAdjustmentIMU)));
   }
 
   /**
@@ -344,8 +346,8 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
   /* Accept the swerve drive state and telemeterize it to smartdashboard */
   public void telemeterize(SwerveDriveState state) {
     SmartDashboard.putString("P:", state.Pose.toString());
-    SmartDashboard.putString("M0A:", state.ModuleStates[0].toString());
-    SmartDashboard.putString("M1A:", state.ModuleStates[1].toString());
+    // SmartDashboard.putString("M0A:", state.ModuleStates[0].toString());
+    // SmartDashboard.putString("M1A:", state.ModuleStates[1].toString());
 
   }
 

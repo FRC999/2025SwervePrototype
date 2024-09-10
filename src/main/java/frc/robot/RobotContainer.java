@@ -11,10 +11,15 @@ import frc.robot.commands.DriveManuallyCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.SmartDashboardSubsystem;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -30,6 +35,7 @@ public class RobotContainer {
   public static Controller xboxDriveController;
 
   public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
+  public static final SmartDashboardSubsystem smartDashboardSubsystem = new SmartDashboardSubsystem();
 
   public static boolean isAllianceRed = false;
   public static boolean isReversingControllerAndIMUForRed = true;
@@ -40,10 +46,11 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the trigger bindings
-    configureBindings();
     // Configure driver interface - binding joystick objects to port numbers
     configureDriverInterface();
+
+      // Configure the trigger bindings
+    configureBindings();
 
      driveSubsystem.setDefaultCommand(
         new DriveManuallyCommand(
@@ -71,10 +78,16 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    testAutoOdometry();
   }
 
   private void configureDriverInterface(){
     xboxDriveController = new Controller(ControllerDevice.XBOX_CONTROLLER);
+  }
+
+  private void testAutoOdometry() {
+    new JoystickButton(xboxDriveController, 1)
+      .onTrue(new InstantCommand(() -> RobotContainer.driveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)))));
   }
 
     // Alliance color determination

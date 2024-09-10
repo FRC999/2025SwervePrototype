@@ -34,7 +34,8 @@ public class SmartDashboardSubsystem extends SubsystemBase {
 
   public void updateAllDisplays(){
     updateIMUTelemetry();
-  
+    updateChassisTelemetry();
+    updateOdometryTelemetry();
   }
 
 

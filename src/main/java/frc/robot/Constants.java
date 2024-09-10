@@ -88,7 +88,8 @@ public final class Constants {
 
       private static final double kDriveGearRatio = 6.122448979591837;
       private static final double kSteerGearRatio = 21.428571428571427;
-      private static final double kWheelRadiusInches = 2;
+      private static final double kWheelRadiusInches = 2*(5.33/5.71
+      );
 
       private static final boolean kInvertLeftSide = false;
       private static final boolean kInvertRightSide = true;
@@ -343,6 +344,7 @@ public final class Constants {
           true // cubeControllerRight
       ),
 
+      
       XBOX_CONTROLLER(
           5, // Port Number for Xbox controller
           ControllerDeviceType.XBOX,
