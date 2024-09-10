@@ -9,6 +9,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveManuallyCommand;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.RunTrajectorySequenceRobotAtStartPoint;
+import frc.robot.commands.StopRobot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SmartDashboardSubsystem;
@@ -79,6 +81,7 @@ public class RobotContainer {
     // cancelling on release.
     //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     testAutoOdometry();
+    testAuto();
   }
 
   private void configureDriverInterface(){
@@ -88,6 +91,12 @@ public class RobotContainer {
   private void testAutoOdometry() {
     new JoystickButton(xboxDriveController, 1)
       .onTrue(new InstantCommand(() -> RobotContainer.driveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)))));
+  }
+
+  public void testAuto() {
+    new JoystickButton(xboxDriveController, 2)
+      .onTrue(new RunTrajectorySequenceRobotAtStartPoint("OneMeterForward"))
+      .onFalse(new StopRobot());
   }
 
     // Alliance color determination

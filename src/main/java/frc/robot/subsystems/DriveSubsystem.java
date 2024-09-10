@@ -196,6 +196,10 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
   }
 
+  public void stopRobot(){
+    drive(0,0,0);
+  }
+
   /**
    * Note that all IMU methods that take or return values should do so in SI
    * units.

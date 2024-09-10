@@ -4,9 +4,11 @@
 
 package frc.robot.commands;
 
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -26,7 +28,34 @@ public class RunTrajectorySequenceRobotAtStartPoint extends SequentialCommandGro
     addCommands();
   }
 
-  public RunTrajectorySequenceRobotAtStartPoint(PathPlannerPath traj, double maxVelocity, double maxAngularVelocity) {
+    /**
+   * Creates a new RunTrajectorySequenceRobotAtStartPoint.
+   * This command reads a PathPlanner trajectory from a file specified by name in
+   * the first parameter,
+   * optionally applies max velocity and max acceleration restrictions as well as
+   * reverse if needed,
+   * and runs the adjusted trajectory via AutonomousTrajectoryRioCommand command.
+   */
+  public RunTrajectorySequenceRobotAtStartPoint(String trajectoryName, double maxVelocity, double maxAngularVelocity) {
+        this(
+            PathPlannerPath.fromPathFile(trajectoryName)
+                .replan(
+                    PathPlannerPath.fromPathFile(trajectoryName).getStartingDifferentialPose()
+                    , new ChassisSpeeds(maxVelocity, maxVelocity, maxAngularVelocity)
+                    )
+        );
+        System.out.println("initalized trajectory: "+ trajectoryName + "V:"+maxVelocity+" A:"+maxAngularVelocity);
+    }
+
+  public RunTrajectorySequenceRobotAtStartPoint(String trajectoryName){
+        this(
+          PathPlannerPath.fromPathFile(trajectoryName)
+        );
+        System.out.println("initalized trajectory: "+ trajectoryName);
+  }
+
+
+  public RunTrajectorySequenceRobotAtStartPoint(PathPlannerPath traj) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
@@ -53,4 +82,5 @@ public class RunTrajectorySequenceRobotAtStartPoint extends SequentialCommandGro
         ),
         new PrintCommand("****End trajectory****"));
   }
+
 }

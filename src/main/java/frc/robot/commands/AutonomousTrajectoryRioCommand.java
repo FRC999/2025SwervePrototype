@@ -54,7 +54,7 @@ public class AutonomousTrajectoryRioCommand extends FollowPathHolonomic{
                 .replan(
                     PathPlannerPath.fromPathFile(trajectoryName).getStartingDifferentialPose()
                     , new ChassisSpeeds(maxVelocity, maxVelocity, maxAngularVelocity)
-                    ).flipPath()
+                    )
         );
         System.out.println("initalized trajectory: "+ trajectoryName + "V:"+maxVelocity+" A:"+maxAngularVelocity);
     }
