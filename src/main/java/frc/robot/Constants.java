@@ -138,7 +138,9 @@ public final class Constants {
       public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
       public static double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
+      public static double maxAcceleration = 41.68; //this is Max linear acceleration units: m/s^2
       public static double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+      public static double maxAngularAcceleration = 37.6992; // this is max angular acceleration units: rad/s^2
 
       // Customize the following values to your prototype
 			public static final double metersPerRotationFX = ( (6.75/6.12)*(107.66/100.0)*(1.0 / 48622.0) ) * 2048.0; // measure this number on the robot - remeasure on carpet
