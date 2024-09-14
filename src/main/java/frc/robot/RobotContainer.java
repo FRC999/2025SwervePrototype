@@ -6,13 +6,10 @@ package frc.robot;
 
 import frc.robot.Constants.OIConstants.ControllerDevice;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
 import frc.robot.commands.DriveManuallyCommand;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.RunTrajectorySequenceRobotAtStartPoint;
 import frc.robot.commands.StopRobot;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SmartDashboardSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,8 +29,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
   public static Controller xboxDriveController;
 
   public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
@@ -73,13 +68,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     testAutoOdometry();
     testAuto();
   }
@@ -96,6 +85,12 @@ public class RobotContainer {
   public void testAuto() {
     new JoystickButton(xboxDriveController, 2)
       .onTrue(new RunTrajectorySequenceRobotAtStartPoint("OneMeterForward"))
+      .onFalse(new StopRobot());
+    new JoystickButton(xboxDriveController, 3)
+      .onTrue(new RunTrajectorySequenceRobotAtStartPoint("OneMeterRight"))
+      .onFalse(new StopRobot());
+    new JoystickButton(xboxDriveController, 4)
+      .onTrue(new RunTrajectorySequenceRobotAtStartPoint("Turn90"))
       .onFalse(new StopRobot());
   }
 
@@ -132,15 +127,5 @@ public class RobotContainer {
     //return -xboxController.getLeftStickOmega();
     return -xboxDriveController.getLeftStickX() * 0.6;
   }
-
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
-  }
+ 
 }

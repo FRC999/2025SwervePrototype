@@ -315,10 +315,10 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
     trajectoryAdjustmentIMU = this.getPose().getRotation().getDegrees() - y;
 
     // alex test
-    // System.out.println("---- Trajectory AdjustmentIMU: "+ trajectoryAdjustmentIMU
-    // + " Real: "+ RobotContainer.imuSubsystem.getYaw()) ;
+    System.out.println("---- Trajectory AdjustmentIMU: "+ trajectoryAdjustmentIMU
+      + " CP: "+ this.getPose().getRotation().getDegrees() + " A: " + y) ;
 
-    return setYaw(y); // our own setYaw that returns old angle
+    return y; // our own setYaw that returns old angle
   }
 
   /**
@@ -329,11 +329,12 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
    * without losing the Yaw direction.
    */
   public void restoreYawAfterTrajectory() {
+    System.out.println("Final pose: " + this.getPose());
     System.out.println(
         "Restoring original IMU after trajectory " + (this.getPose().getRotation().getDegrees() + trajectoryAdjustmentIMU));
     this.seedFieldRelative(
       new Pose2d(0, 0, 
-        new Rotation2d(this.getPose().getRotation().getDegrees() + trajectoryAdjustmentIMU)));
+        new Rotation2d().fromDegrees(this.getPose().getRotation().getDegrees() + trajectoryAdjustmentIMU)));
   }
 
   /**

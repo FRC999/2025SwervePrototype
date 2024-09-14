@@ -78,8 +78,8 @@ public class RunTrajectorySequenceRobotAtStartPoint extends SequentialCommandGro
         //, // Run a trajectory
         .finallyDo (
           () -> RobotContainer.driveSubsystem.restoreYawAfterTrajectory()
-          //new InstantCommand(() -> RobotContainer.imuSubsystem.restoreYawAfterTrajectory())
-        ),
+        )
+        ,
         new PrintCommand("****End trajectory****"));
   }
 
