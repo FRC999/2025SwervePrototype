@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OIConstants.ControllerDevice;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutonomousTrajectory2Poses;
 import frc.robot.commands.DriveManuallyCommand;
 import frc.robot.commands.RunTrajectorySequenceRobotAtStartPoint;
 import frc.robot.commands.StopRobot;
@@ -91,6 +92,11 @@ public class RobotContainer {
       .onFalse(new StopRobot());
     new JoystickButton(xboxDriveController, 4)
       .onTrue(new RunTrajectorySequenceRobotAtStartPoint("Turn90"))
+      .onFalse(new StopRobot());
+
+    new JoystickButton(xboxDriveController, 5)
+      .onTrue(new AutonomousTrajectory2Poses(new Pose2d(1, 1, new Rotation2d(0)), 
+        new Pose2d(2, 2, new Rotation2d(0))))
       .onFalse(new StopRobot());
   }
 
