@@ -16,6 +16,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackTy
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
@@ -266,6 +267,12 @@ public final class Constants {
 
       } // End ENUM SwerveModuleConstants
     }
+
+    public class SysIdConstants {
+     public static final double rampRate = 0.01;
+     public static final double stepVoltage = 0.05; 
+     public static final double timeOut = Units.millisecondsToSeconds(5000);
+    }
   }
 
   /**
@@ -420,4 +427,5 @@ public final class Constants {
     // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
     private static final Pigeon2Configuration pigeonConfigs = null;
   }
+
 }

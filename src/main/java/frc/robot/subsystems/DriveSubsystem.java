@@ -17,10 +17,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.SwerveConstants.SwerveChassis;
+import frc.robot.Constants.SwerveConstants.SysIdConstants;
 import frc.robot.Constants.SwerveConstants.TunerConstants;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -42,6 +45,31 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
   Pigeon2 imu;
   private double trajectoryAdjustmentIMU; // This is the value we need to adjust the IMU by after Trajectory
   // is completed
+
+  private final SysIdRoutine mSysIdRoutine = 
+    new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new SysIdRoutine.Config(1.0,
+           1.0,
+           5.0),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motor(s).
+              m_shooterMotor::setVoltage,
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              log -> {
+                // Record a frame for the shooter motor.
+                log.motor("shooter-wheel")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                            m_shooterMotor.get() * RobotController.getBatteryVoltage(), Volts))
+                    .angularPosition(m_angle.mut_replace(m_shooterEncoder.getDistance(), Rotations))
+                    .angularVelocity(
+                        m_velocity.mut_replace(m_shooterEncoder.getRate(), RotationsPerSecond));
+              },
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("shooter")
+              this));
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(double OdometryUpdateFrequency) {
@@ -355,6 +383,8 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
     // SmartDashboard.putString("M1A:", state.ModuleStates[1].toString());
 
   }
+
+
 
   @Override
   public void periodic() {
