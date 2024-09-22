@@ -15,10 +15,19 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -46,26 +55,29 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
   private double trajectoryAdjustmentIMU; // This is the value we need to adjust the IMU by after Trajectory
   // is completed
 
+  private double previousOmegaRotationCommand;
+
+  
+
   private final SysIdRoutine mSysIdRoutine = 
     new SysIdRoutine(
           // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
-          new SysIdRoutine.Config(1.0,
-           1.0,
-           5.0),
+          new SysIdRoutine.Config(Volts.of(0.1).per(Seconds.of(1)),
+           Volts.of(0.1),
+           Seconds.of(50)),
           new SysIdRoutine.Mechanism(
               // Tell SysId how to plumb the driving voltage to the motor(s).
-              m_shooterMotor::setVoltage,
+              (Measure<Voltage> volts) -> {
+                        this.turnToAngleWithVolt(volts.in(Volts));
+                },
               // Tell SysId how to record a frame of data for each motor on the mechanism being
               // characterized.
               log -> {
                 // Record a frame for the shooter motor.
-                log.motor("shooter-wheel")
-                    .voltage(
-                        m_appliedVoltage.mut_replace(
-                            m_shooterMotor.get() * RobotController.getBatteryVoltage(), Volts))
-                    .angularPosition(m_angle.mut_replace(m_shooterEncoder.getDistance(), Rotations))
-                    .angularVelocity(
-                        m_velocity.mut_replace(m_shooterEncoder.getRate(), RotationsPerSecond));
+                log.motor("chassis-angleMotor")
+                    .voltage(Volts.of(previousOmegaRotationCommand))
+                    .angularPosition(Radians.of(this.getAngularPosition()))
+                    .angularVelocity(RadiansPerSecond.of(this.getAngularVelocity()));
               },
               // Tell SysId to make generated commands require this subsystem, suffix test state in
               // WPILog with this subsystem's name ("shooter")
@@ -83,6 +95,24 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
 
         this.registerTelemetry(this::telemeterize);
     }
+
+   /**
+   * Returns a command that will execute a quasistatic test in the given direction.
+   *
+   * @param direction The direction (forward or reverse) to run the test in
+   */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return mSysIdRoutine.quasistatic(direction);
+  }
+
+  /**
+   * Returns a command that will execute a dynamic test in the given direction.
+   *
+   * @param direction The direction (forward or reverse) to run the test in
+   */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return mSysIdRoutine.dynamic(direction);
+  }
 
   public static SwerveModuleConstants[] configureSwerveChassis() {
     return new SwerveModuleConstants[] {
@@ -132,11 +162,13 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   public void drive(double xVelocity_m_per_s, double yVelocity_m_per_s, double omega_rad_per_s) {
+    System.out.println("o:" + omega_rad_per_s/SwerveChassis.MaxAngularRate);
     this.setControl(
       drive.withVelocityX(xVelocity_m_per_s)
         .withVelocityY(yVelocity_m_per_s)
         .withRotationalRate(omega_rad_per_s)
     );
+    previousOmegaRotationCommand = omega_rad_per_s / SwerveChassis.MaxAngularRate;
   }
 
     /** 
@@ -228,6 +260,9 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
     drive(0,0,0);
   }
 
+  public double getOmegaRoationCommand() {
+    return previousOmegaRotationCommand;
+  }
   /**
    * Note that all IMU methods that take or return values should do so in SI
    * units.
@@ -384,7 +419,17 @@ public class DriveSubsystem extends SwerveDrivetrain implements Subsystem {
 
   }
 
+  public void turnToAngleWithVolt(double power) {
+    drive(0, 0, power*SwerveChassis.MaxAngularRate);
+  }
 
+  public double getAngularPosition() {
+    return this.getState().Pose.getRotation().getRadians();
+  }
+
+  public double getAngularVelocity() {
+    return this.getState().speeds.omegaRadiansPerSecond;
+  }
 
   @Override
   public void periodic() {

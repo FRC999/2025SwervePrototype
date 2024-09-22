@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,11 +51,11 @@ public class RobotContainer {
       // Configure the trigger bindings
     configureBindings();
 
-     driveSubsystem.setDefaultCommand(
-        new DriveManuallyCommand(
-            () -> getDriverXAxis(),
-            () -> getDriverYAxis(),
-            () -> getDriverOmegaAxis()));
+    //  driveSubsystem.setDefaultCommand(
+    //     new DriveManuallyCommand(
+    //         () -> getDriverXAxis(),
+    //         () -> getDriverYAxis(),
+    //         () -> getDriverOmegaAxis()));
   }
 
 
@@ -69,9 +70,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
     testAutoOdometry();
-    testAuto();
+    testCharacterization();
   }
 
   private void configureDriverInterface(){
@@ -97,6 +97,21 @@ public class RobotContainer {
     new JoystickButton(xboxDriveController, 5)
       .onTrue(new AutonomousTrajectory2Poses(new Pose2d(1, 1, new Rotation2d(0)), 
         new Pose2d(2, 2, new Rotation2d(0))))
+      .onFalse(new StopRobot());
+  }
+
+  public void testCharacterization() {
+    new JoystickButton(xboxDriveController, 2)
+      .onTrue(driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
+      .onFalse(new StopRobot());
+    new JoystickButton(xboxDriveController, 3)
+      .onTrue(driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
+      .onFalse(new StopRobot());
+    new JoystickButton(xboxDriveController, 4)
+      .onTrue(driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward))
+      .onFalse(new StopRobot());
+    new JoystickButton(xboxDriveController, 5)
+      .onTrue(driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse))
       .onFalse(new StopRobot());
   }
 
