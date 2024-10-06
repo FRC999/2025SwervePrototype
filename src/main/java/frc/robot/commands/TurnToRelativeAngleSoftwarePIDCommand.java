@@ -16,14 +16,14 @@ import frc.robot.Constants.SwerveConstants.SwerveChassis;
 public class TurnToRelativeAngleSoftwarePIDCommand extends Command {
 
 	// Software PID turn constants
-	private final double kP = 0.15958;
+	private final double kP = 6.0;//1.5958;
 	private final double kI = 0.02;
 	private final double kD = 0.0;
-	private final double minOmega = 0.37;
+	private final double minOmega = 10.0;
 	Rotation2d angle;
 	Supplier<Rotation2d> angleSupplier;
-	private double kMaxSpeed = SwerveChassis.MaxAngularRate; // radians per second
-	private double kMaxAccel = SwerveChassis.maxAngularAcceleration; // radians per second square
+	private double kMaxSpeed = SwerveChassis.MaxAngularRate*0.5; // radians per second
+	private double kMaxAccel = SwerveChassis.maxAngularAcceleration*0.5; // radians per second square
 	//private double kMaxSpeed = 360;
 	//private double kMaxAccel = 720;
 	private TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAccel);
@@ -58,13 +58,14 @@ public class TurnToRelativeAngleSoftwarePIDCommand extends Command {
 
 	@Override
 	public void execute() {
-		double omegaDegPerSec = MathUtil.clamp(profiledPID.calculate(RobotContainer.driveSubsystem.getYaw()),-0.85,0.85);
+		double omegaDegPerSec = MathUtil.clamp(profiledPID.calculate(RobotContainer.driveSubsystem.getYaw()),-100,100);
 		//System.out.println("O1:"+omegaDegPerSec);
 		omegaDegPerSec = (omegaDegPerSec<0)? omegaDegPerSec - minOmega :  omegaDegPerSec + minOmega ;
+		double omegaRadPerSec = Math.toRadians(omegaDegPerSec);
 		//System.out.println("******yaw: " + RobotContainer.imuSubsystem.getYaw() + " a: " + angle.getDegrees() + " g: " +finalGoal + " o: " + Units.degreesToRadians(omegaDegPerSec)/ SwerveChassis.MAX_ANGULAR_VELOCITY);
-		RobotContainer.driveSubsystem.drive(0, 0, omegaDegPerSec);
+		RobotContainer.driveSubsystem.drive(0, 0, omegaRadPerSec);
 		//profiledPID.setGoal(RobotContainer.imuSubsystem.getYaw()+angle.getDegrees());  // get new YAW
-		//System.out.println("O2:"+omegaDegPerSec);
+		System.out.println("O2:"+omegaRadPerSec);
 	}
 
 	@Override
