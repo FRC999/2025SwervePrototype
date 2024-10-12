@@ -10,6 +10,7 @@ import frc.robot.commands.AutonomousTrajectory2Poses;
 import frc.robot.commands.DriveManuallyCommand;
 import frc.robot.commands.RunTrajectorySequenceRobotAtStartPoint;
 import frc.robot.commands.StopRobot;
+import frc.robot.commands.TurnToRelativeAngleSoftwarePIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.SmartDashboardSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -51,11 +52,11 @@ public class RobotContainer {
       // Configure the trigger bindings
     configureBindings();
 
-    //  driveSubsystem.setDefaultCommand(
-    //     new DriveManuallyCommand(
-    //         () -> getDriverXAxis(),
-    //         () -> getDriverYAxis(),
-    //         () -> getDriverOmegaAxis()));
+     driveSubsystem.setDefaultCommand(
+        new DriveManuallyCommand(
+            () -> getDriverXAxis(),
+            () -> getDriverYAxis(),
+            () -> getDriverOmegaAxis()));
   }
 
 
@@ -70,8 +71,9 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    testAutoOdometry();
-    testCharacterization();
+    // testAutoOdometry();
+    // testCharacterization();
+    testTurn();
   }
 
   private void configureDriverInterface(){
@@ -81,6 +83,12 @@ public class RobotContainer {
   private void testAutoOdometry() {
     new JoystickButton(xboxDriveController, 1)
       .onTrue(new InstantCommand(() -> RobotContainer.driveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)))));
+  }
+
+  private void testTurn() {
+    new JoystickButton(xboxDriveController, 1)
+      .onTrue(new TurnToRelativeAngleSoftwarePIDCommand(()->new Rotation2d().fromDegrees(25)))
+      .onFalse(new StopRobot());
   }
 
   public void testAuto() {
