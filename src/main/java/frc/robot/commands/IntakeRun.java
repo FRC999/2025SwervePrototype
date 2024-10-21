@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.DebugTelemetrySubsystems;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -22,9 +21,6 @@ public class IntakeRun extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if ( DebugTelemetrySubsystems.intake) {
-      System.out.println("--- Running intake with speed "+speed);
-    }
     RobotContainer.intakeSubsystem.runIntake(speed);
   }
 }
