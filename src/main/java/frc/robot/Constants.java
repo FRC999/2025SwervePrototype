@@ -281,6 +281,43 @@ public final class Constants {
 		public static int arm = 40;
 		public static int shooter = 40;
 	}
+  public static final class DebugTelemetrySubsystems {
+		
+		public static final boolean odometry = true;
+		public static final boolean imu = true;
+
+		public static final boolean arm = false;
+		public static final boolean intake = true;
+		public static final boolean shooter = false;
+		public static final boolean noteHunting = false;
+		public static final boolean llAprilTag = true;
+		public static final boolean pvAprilTag = false;
+
+		// Calibration-only methods
+		public static final boolean calibrateArm = false;
+		public static final boolean calibrateIntake = false;
+		public static final boolean calibrateShooter = false;
+
+	}
+
+  public static final class EnableCurrentLimiter {
+		public static final boolean drive = true;
+		public static final boolean intake = true;
+		public static final boolean arm = true;
+		public static final boolean shooter = true;
+	}
+
+  public static final class EnabledSubsystems {
+		public static final boolean arm = true;
+		public static final boolean intake = true;
+		public static final boolean shooter = true;
+		public static final boolean climber = true;
+		public static final boolean candle = true;
+		public static final boolean driverCamera =  true;
+		public static final boolean noteHuntingCamera = true;
+		public static final boolean llAprilTagCamera = true;
+		public static final boolean pvAprilTagCamera = false;
+	}
 
   /**
    * Controller-related constants.
@@ -524,5 +561,3 @@ public final class Constants {
 
 	}
 }
-
-

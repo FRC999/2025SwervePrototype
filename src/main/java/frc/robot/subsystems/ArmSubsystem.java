@@ -189,7 +189,7 @@ public class ArmSubsystem extends SubsystemBase {
     armEncoderZero = getArmEncoderLeader() -
       (
        (getArmIMUPitch() - 
-          ((Arm.USE_PAN_IMU_FOR_CORRECTION) ? RobotContainer.imuSubsystem.getPitch() : 0))  // pan IMU Pitch-based correction for uneven surface
+          ((Arm.USE_PAN_IMU_FOR_CORRECTION) ? RobotContainer.driveSubsystem.getPitch() : 0))  // pan IMU Pitch-based correction for uneven surface
             * Arm.ARM_ENCODER_CHANGE_PER_DEGREE
       );
 
@@ -204,7 +204,7 @@ public class ArmSubsystem extends SubsystemBase {
     armEncoderZero = getArmEncoderLeader() -
       (
        (Arm.ARM_IMU_RESET_ANGLE - 
-          ((Arm.USE_PAN_IMU_FOR_CORRECTION) ? RobotContainer.imuSubsystem.getPitch() : 0))  // pan IMU Pitch-based correction for uneven surface
+          ((Arm.USE_PAN_IMU_FOR_CORRECTION) ? RobotContainer.driveSubsystem.getPitch() : 0))  // pan IMU Pitch-based correction for uneven surface
             * Arm.ARM_ENCODER_CHANGE_PER_DEGREE
       );
 

@@ -11,6 +11,7 @@ import frc.robot.commands.DriveManuallyCommand;
 import frc.robot.commands.RunTrajectorySequenceRobotAtStartPoint;
 import frc.robot.commands.StopRobot;
 import frc.robot.commands.TurnToRelativeAngleSoftwarePIDCommand;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.SmartDashboardSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -34,6 +35,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public static Controller xboxDriveController;
 
+  public static final ArmSubsystem armSubsystem = new ArmSubsystem();
   public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
   public static final SmartDashboardSubsystem smartDashboardSubsystem = new SmartDashboardSubsystem();
 
