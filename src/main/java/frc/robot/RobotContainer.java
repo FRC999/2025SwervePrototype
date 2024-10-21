@@ -12,6 +12,7 @@ import frc.robot.commands.RunTrajectorySequenceRobotAtStartPoint;
 import frc.robot.commands.StopRobot;
 import frc.robot.commands.TurnToRelativeAngleSoftwarePIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SmartDashboardSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,6 +37,7 @@ public class RobotContainer {
 
   public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
   public static final SmartDashboardSubsystem smartDashboardSubsystem = new SmartDashboardSubsystem();
+  public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   public static boolean isAllianceRed = false;
   public static boolean isReversingControllerAndIMUForRed = true;

@@ -273,6 +273,24 @@ public final class Constants {
      public static final double stepVoltage = 0.05; 
      public static final double timeOut = Units.millisecondsToSeconds(5000);
     }
+
+    public static final class Intake {
+			public static final int INTAKE_MOTOR_CAN_ID = 51;
+			//public static final boolean INTAKE_SENSOR_PHASE = false;
+			public static final boolean INTAKE_INVERTED = false; // positive power - note in
+			//public static final double INTAKE_NEUTRAL_DEADBAND = 0.001;
+			//public static final int INTAKE_TIMEOUT = 30; //in ms
+			public static final double INTAKE_NOTE_GRAB_POWER = 0.45;
+			public static final double INTAKE_NOTE_FORWARD_POWER = 0.35;
+			public static final double INTAKE_NOTE_SPEW_POWER = -0.35;
+
+			public static final boolean NOTE_SENSOR_PRESENT = true; // turn to TRUE when sensor will be configured
+			public static final int NOTE_SENSOR_SWITCH_DIO_PORT_NUMBER = 4;
+
+			public static final boolean INTAKE_DOWN_LIMIT_SWITCH_PRESENT = true;
+			public static final int INTAKE_DOWN_LIMIT_SWITCH_DIO_PORT_NUMBER = 8; // DIO port number for the intake limit switch
+
+		}
   }
 
   /**
@@ -427,5 +445,7 @@ public final class Constants {
     // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
     private static final Pigeon2Configuration pigeonConfigs = null;
   }
+
+  
 
 }
