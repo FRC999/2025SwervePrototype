@@ -19,7 +19,7 @@ public class ArmDownToIntake extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new ArmTurnToAngle(() -> Arm.ARM_INTAKE_ANGLE)
-        .until(RobotContainer.driveSubsystem::isIntakeDown).andThen(new ArmRelease())
+        .until(RobotContainer.intakeSubsystem::isIntakeDown).andThen(new ArmRelease())
           .andThen(new PrintCommand("Intake is down"))
     );
   }

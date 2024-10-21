@@ -579,6 +579,3 @@ public final class Constants {
 
 	}
 }
-  
-
-}
