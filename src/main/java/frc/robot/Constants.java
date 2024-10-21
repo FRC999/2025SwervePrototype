@@ -293,6 +293,50 @@ public final class Constants {
 		}
   }
 
+  public static final class CurrentLimiter {
+		public static int drive = 45;
+		public static int intake = 0;
+		public static int arm = 40;
+		public static int shooter = 40;
+	}
+  public static final class DebugTelemetrySubsystems {
+		
+		public static final boolean odometry = true;
+		public static final boolean imu = true;
+
+		public static final boolean arm = false;
+		public static final boolean intake = true;
+		public static final boolean shooter = false;
+		public static final boolean noteHunting = false;
+		public static final boolean llAprilTag = true;
+		public static final boolean pvAprilTag = false;
+
+		// Calibration-only methods
+		public static final boolean calibrateArm = false;
+		public static final boolean calibrateIntake = false;
+		public static final boolean calibrateShooter = false;
+
+	}
+
+  public static final class EnableCurrentLimiter {
+		public static final boolean drive = true;
+		public static final boolean intake = true;
+		public static final boolean arm = true;
+		public static final boolean shooter = true;
+	}
+
+  public static final class EnabledSubsystems {
+		public static final boolean arm = true;
+		public static final boolean intake = true;
+		public static final boolean shooter = true;
+		public static final boolean climber = true;
+		public static final boolean candle = true;
+		public static final boolean driverCamera =  true;
+		public static final boolean noteHuntingCamera = true;
+		public static final boolean llAprilTagCamera = true;
+		public static final boolean pvAprilTagCamera = false;
+	}
+
   /**
    * Controller-related constants.
    * Here we define port numbers, axis, deadbands, button numbers and various
@@ -446,6 +490,95 @@ public final class Constants {
     private static final Pigeon2Configuration pigeonConfigs = null;
   }
 
+  public static final class GPMConstants {
+		public static final class Arm {
+
+			public static enum ArmMotorConstantsEnum {
+				LEFTMOTOR( // Front Left - main motor
+						32, // CANID
+						true, // Inversion
+						false // Follower
+				),
+				RIGHTMOTOR( // Front Left
+						31, // CANID
+						true, // Inversion
+						true // Follower
+				);
+
+				private int armMotorID; // CAN ID
+				private boolean armMotorInverted;
+				private boolean armMotorFollower;
+
+				ArmMotorConstantsEnum(int cid, boolean i, boolean f) {
+					this.armMotorID = cid;
+					this.armMotorInverted = i;
+					this.armMotorFollower = f;
+				}
+
+				public int getArmMotorID() {
+					return armMotorID;
+				}
+
+				public boolean getArmMotorInverted() {
+					return armMotorInverted;
+				}
+
+				public boolean getArmMotorFollower() {
+					return armMotorFollower;
+				}
+			}
+
+			public static final class ArmPIDConstants {
+
+				public static final double kP = 0.02;
+				public static final double kI = 0.000;
+				public static final double kD = 2.0;
+				public static final double kF = 0;
+				public static final double kMaxOutput = 0.6;
+				public static final double Acceleration = 6750; // raw sensor units per 100 ms per second
+				public static final double CruiseVelocity = 6750; // raw sensor units per 100 ms
+				public static final int Smoothing = 3; // CurveStrength. 0 to use Trapezoidal Motion Profile. [1,8] for
+														// S-Curve (greater value yields greater smoothing).
+				public static final double DefaultAcceptableError = 5; // Sensor units
+				public static final double Izone = 500;
+				public static final double PeakOutput = 0.5; // Closed Loop peak output
+				public static final double NeutralDeadband = 0.001;
+				public static final int periodMs = 10; // status frame period
+				public static final int timeoutMs = 30; // status frame timeout
+				public static final int closedLoopPeriod = 1; // 1ms for TalonSRX and locally connected encoder
+
+				public static final double anglePIDTolerance = 0.5; // degree tolerance when rotating arm to angle using PID
+
+			}
+
+			// Arm IMU
+			public static final int PIGEON2_ARM_CAN_ID = 16;
+			public static final boolean USE_PAN_IMU_FOR_CORRECTION = true; // Correct Arm IMU with Pan IMU if game surface is uneven
+			public static final double ARM_ENCODER_CHANGE_PER_DEGREE = 3.862568732		; //TODO: test and correct as needed
+
+			//TODO: Check conversion factors; find the ones that work best with PID
+			public static final double POSITION_CONVERSION_FACTOR = 2*Math.PI;
+			public static final double VELOCITY_CONVERSION_FACTOR = 2*Math.PI/60;
+			public static final double nominalVoltage = 12.0;
+			public static final int shooterMotorCurrentLimit = 40;
+			public static final double positionConversionFactor = 0;
+			public static final double rampRate = 0.25;
+
+			// TODO: Calibrate all these angles
+			public static final double ARM_MIN_ANGLE = -83.0;
+			public static final double ARM_MAX_ANGLE = 15.0;
+			public static final double ARM_INTAKE_ANGLE = -83.0;
+			public static final double ARM_AMP_ANGLE = 15.0;
+			public static final double ARM_NOTE_VISION_ANGLE = -69.0;	//BASED ON TESTING MAR 11
+			public static final double ARM_NOTE_VISION_ANGLE_FOR_AUTO_NOTE_PICKUP = -64.0;	//BASED ON TESTING MAR 11
+			public static final double ARM_CLIMB_ANGLE = 0;	//TODO: test this
+			public static final double ARM_IMU_RESET_ANGLE = -82.0;
+
+			public static final double armDownPowerForRecalibration = -0.2;
+		}
+
+	}
+}
   
 
 }
