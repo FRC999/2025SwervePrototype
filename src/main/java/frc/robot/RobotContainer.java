@@ -11,9 +11,12 @@ import frc.robot.commands.DriveManuallyCommand;
 import frc.robot.commands.RunTrajectorySequenceRobotAtStartPoint;
 import frc.robot.commands.StopRobot;
 import frc.robot.commands.TurnToRelativeAngleSoftwarePIDCommand;
+import frc.robot.lib.GPMHelpers;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LLVisionSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SmartDashboardSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,9 +43,17 @@ public class RobotContainer {
   public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
   public static final SmartDashboardSubsystem smartDashboardSubsystem = new SmartDashboardSubsystem();
   public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  public final static GPMHelpers gpmHelpers = new GPMHelpers();
+  public static final LLVisionSubsystem llVisionSubsystem = new LLVisionSubsystem();
 
   public static boolean isAllianceRed = false;
   public static boolean isReversingControllerAndIMUForRed = true;
+
+  public static Controller driveStick; // for robot testing only
+  public static Controller driveStick1; // for robot testing only
+  public static Controller driveStick2; // for robot testing only
+  public static Controller driveStick3; // for robot testing only
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   // private final CommandXboxController m_driverController =

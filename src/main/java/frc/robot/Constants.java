@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.Map;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -14,7 +16,10 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Unit;
 
@@ -483,6 +488,303 @@ public final class Constants {
     }
   }
 
+  public static final class VisionConstants {
+
+		// Poses of important game elements
+		// Direction is - front of the robot faces the element
+		
+		public static final Pose2d redSpeakerPose = new Pose2d(8.308467, 1.442593, new Rotation2d(0)).relativeTo(LimeLightConstants.centerFieldPose) ;
+		public static final Translation2d redSpeakerTranslation = redSpeakerPose.getTranslation();
+
+		public static final Pose2d blueSpeakerPose = new Pose2d(-8.308467, 1.442593, new Rotation2d(Math.PI)).relativeTo(LimeLightConstants.centerFieldPose) ;
+		public static final Translation2d blueSpeakerTranslation = blueSpeakerPose.getTranslation();
+
+		public static final Pose2d redAmpPose = new Pose2d(6.429883, 4.098925, new Rotation2d(Math.PI/2)).relativeTo(LimeLightConstants.centerFieldPose) ;
+		public static final Translation2d redAmpTranslation = redAmpPose.getTranslation();
+		// Facign down
+		public static final Pose2d blueAmpPose = new Pose2d(-6.429883, 4.098925, new Rotation2d(Math.PI/2)).relativeTo(LimeLightConstants.centerFieldPose) ;
+		public static final Translation2d blueAmpTranslation = blueAmpPose.getTranslation();
+
+		// Ideal shooting poses - all of them - back to the target, hence Math.PI rotation transform is added to all
+
+		// Facing backwards
+		public static final Transform2d redSpeakerShootingTransform = new Transform2d(-1, 0, new Rotation2d(Math.PI));
+		public static final Pose2d redSpeakerShootingPose = redSpeakerPose.transformBy(redSpeakerShootingTransform);
+		// Facing forward
+		public static final Transform2d blueSpeakerShootingTransform = new Transform2d(2, 0, new Rotation2d(Math.PI));
+		public static final Pose2d blueSpeakerShootingPose = blueSpeakerPose.transformBy(blueSpeakerShootingTransform);
+		// Facign down
+		public static final Transform2d redAmpShootingTransform = new Transform2d(0, -1, new Rotation2d(Math.PI));
+		public static final Pose2d redAmpShootingPose = redAmpPose.transformBy(redAmpShootingTransform);
+		// Facign down
+		public static final Transform2d blueAmpShootingTransform = new Transform2d(2, 0, new Rotation2d(Math.PI));
+		public static final Pose2d blueAmpShootingPose = blueAmpPose.transformBy(blueAmpShootingTransform);
+
+
+		// All cameras, both LL and PhotonVision, must be properly calibrated for use
+		// per procedures indicated by the vendors.
+		// LL calibration involves special downloadable sheet with tags on it,
+		// while PhotonVision is calibrated via checkerboard.
+		// All calibration sheets must be printed to proper size as we try using built-in
+		// field pose estimators
+
+		public static final class LimeLightConstants {
+
+			// If changing this value, do not forget to set it in LL
+			public static final String LLAprilTagName = "limelight-at";	// Limelight that will track Apriltags; may decide to use multiple ones
+
+			// centerpose from BLUE coordinate system
+			public static final Pose2d centerFieldPose = new Pose2d(8.308467, 4.098925, new Rotation2d(0));
+			// NEW origin from the old origin point of view in the old coordiinate system
+			public static final Pose2d originFieldPose = new Pose2d(-8.308467, -4.098925, new Rotation2d(0));
+
+
+			// *** LL Detector ***
+			public static final String LLDetectorName = "limelight-d";	// Limelight that will track Apriltags; may decide to use multiple ones
+
+			public static final double MOTOR_SPEED = 0.5;
+			public static final double VELOCITY_TO_AUTO_NOTE = 0.5;
+
+			// Transform to move the robot IN FRONT of the April tag, but 1.5m away
+			public static final Transform2d robotBeforeApriltagForClimbingTransform = new Transform2d(new Translation2d(-1, Rotation2d.fromDegrees(0)), Rotation2d.fromDegrees(0));
+			public static final Transform2d robotBeforeApriltagForPreClimbingTransform = new Transform2d(new Translation2d(-1.5, Rotation2d.fromDegrees(0)), Rotation2d.fromDegrees(0));
+			
+			// Climbing aprilTag poses
+			public static final Map<Double, Pose2d> climbTagPoses = Map.of(
+				14.0, new Pose2d(centerFieldPose.getX() -2.950083, centerFieldPose.getY() -0.000127,  Rotation2d.fromDegrees(180)),
+    			15.0, new Pose2d(centerFieldPose.getX() -3.629533, centerFieldPose.getY() + 0.393065, Rotation2d.fromDegrees(-60)),
+				16.0, new Pose2d(centerFieldPose.getX() -3.629533, centerFieldPose.getY()  -0.392049, Rotation2d.fromDegrees(60)), 
+				13.0, new Pose2d(centerFieldPose.getX() +2.950083, centerFieldPose.getY() -0.000127,  Rotation2d.fromDegrees(0)),
+    			12.0, new Pose2d(centerFieldPose.getX() +3.629533, centerFieldPose.getY() + 0.393065, Rotation2d.fromDegrees(-120)),
+				11.0, new Pose2d(centerFieldPose.getX() +3.629533, centerFieldPose.getY()  -0.392049, Rotation2d.fromDegrees(120))
+			);
+
+			// Pose where robot needs to stop before the Apriltag
+			public static final Map<Double, Pose2d> robotClimbingPoses = Map.of(
+				11.0, climbTagPoses.get(11.0).plus(robotBeforeApriltagForClimbingTransform),
+				12.0, climbTagPoses.get(12.0).plus(robotBeforeApriltagForClimbingTransform),
+				13.0, climbTagPoses.get(13.0).plus(robotBeforeApriltagForClimbingTransform),
+				14.0, climbTagPoses.get(14.0).plus(robotBeforeApriltagForClimbingTransform),
+				15.0, climbTagPoses.get(15.0).plus(robotBeforeApriltagForClimbingTransform),
+				16.0, climbTagPoses.get(16.0).plus(robotBeforeApriltagForClimbingTransform)
+			);
+
+			// Pose where robot needs to stop to raise the arm before the Apriltag
+			public static final Map<Double, Pose2d> robotPreClimbingPoses = Map.of(
+				11.0, climbTagPoses.get(11.0).plus(robotBeforeApriltagForPreClimbingTransform),
+				12.0, climbTagPoses.get(12.0).plus(robotBeforeApriltagForPreClimbingTransform),
+				13.0, climbTagPoses.get(13.0).plus(robotBeforeApriltagForPreClimbingTransform),
+				14.0, climbTagPoses.get(14.0).plus(robotBeforeApriltagForPreClimbingTransform),
+				15.0, climbTagPoses.get(15.0).plus(robotBeforeApriltagForPreClimbingTransform),
+				16.0, climbTagPoses.get(16.0).plus(robotBeforeApriltagForPreClimbingTransform)
+			);
+
+			//TODO: measure and verify this transform
+			public static final Transform2d cameraToRobotTransform = new Transform2d( new Translation2d(-0.30, -0.23), Rotation2d.fromDegrees(180));
+	
+		}
+		public static final class PhotonVisionConstants {
+
+			public static final String PVCameraName = "Razer_Kiyo";
+			public static final String NoteCameraName = "Arducam_OV9782_USB_Camera";
+			// Camera position from center of the chassis / floor (for Z) point of view; it's looking backwards
+			public static final Transform2d robotToCam = new Transform2d(new Translation2d(0.22, 0.25), Rotation2d.fromDegrees(180));
+
+		}
+	}
+
+	public static final class AutoConstants {
+
+		public static double armInPerimeterAngle = -15; // move arm into perimeter
+
+		private static final double fieldSizeX = 16.545814;
+		private static final double fieldSizeY = 8.212;
+
+		public static enum autoPoses {	// important poses
+
+			// SPEAKER TAGS
+
+			BLUE_SPEAKER_TAG (0, 4.986, 180),
+			RED_SPEAKER_TAG (16.545814, 4.986, 0),
+
+			// ========================================= AUTO POSES ======================================
+
+			BLUE_SPEAKER_HIGHER (0.765, 6.764, 60),
+			BLUE_SPEAKER_MID (1.346, 5.540, 0),
+			BLUE_SPEAKER_LOWER (0.765, 4.315, -60),
+			BLUE_SPEAKER_MID_RETURN (1.346, 5.740, 0),
+
+			BLUE_HIGHER_POS_OUT(3.25, 7.1,0),
+			BLUE_MID_POS_OUT(3.25,5.540,0),
+			BLUE_LOWER_POS_OUT (3.25, 1.312, 0),
+
+			RED_SPEAKER_HIGHER(fieldSizeX-BLUE_SPEAKER_HIGHER.getPose().getX(), BLUE_SPEAKER_HIGHER.getPose().getY(), 120),
+			RED_SPEAKER_MID(fieldSizeX-BLUE_SPEAKER_MID.getPose().getX(), BLUE_SPEAKER_MID.getPose().getY(), 180),
+			RED_SPEAKER_LOWER(fieldSizeX-BLUE_SPEAKER_LOWER.getPose().getX(), BLUE_SPEAKER_LOWER.getPose().getY(), -120),
+
+			RED_HIGHER_POS_OUT(fieldSizeX-BLUE_HIGHER_POS_OUT.getPose().getX(), BLUE_HIGHER_POS_OUT.getPose().getY(), 180),
+			RED_MID_POS_OUT(fieldSizeX-BLUE_MID_POS_OUT.getPose().getX(), BLUE_MID_POS_OUT.getPose().getY(), 180),
+			RED_LOWER_POS_OUT(fieldSizeX-BLUE_LOWER_POS_OUT.getPose().getX(), BLUE_LOWER_POS_OUT.getPose().getY(), 180),
+
+			BLUE_HIGHER_RING(2.896,7.015,0),
+			BLUE_MID_RING(2.896,5.5535,0),
+			BLUE_LOWER_RING(2.896,4.0055,0),
+
+			RED_HIGHER_RING(fieldSizeX-BLUE_HIGHER_RING.getPose().getX(), BLUE_HIGHER_RING.getPose().getY(),180),
+			RED_MID_RING(fieldSizeX-BLUE_MID_RING.getPose().getX(), BLUE_MID_RING.getPose().getY(),180),
+			RED_LOWER_RING(fieldSizeX-BLUE_LOWER_RING.getPose().getX(), BLUE_LOWER_RING.getPose().getY(),180),
+
+			BLUE_HIGHER_RING_TAKE_START(1.909,7.0115,0),
+			BLUE_MID_RING_TAKE_START(1.909,5.5535,0),
+			BLUE_LOWER_RING_TAKE_START(1.909,4.1055,0),
+
+			BLUE_HIGHER_RING_TAKE_END(2.465,7.0115,0),
+			BLUE_MID_RING_TAKE_END(2.465,5.5535,0),
+			BLUE_LOWER_RING_TAKE_END(2.465,4.0055,0),
+
+			// ----- CENTER NOTE POSES -----
+			BLUE_CENTER_HIGHER_RING(8.245,8.238,0),
+			BLUE_CENTER_HIGHER_TAKE_NOTE_START(7.689,8.238,0),
+			BLUE_CENTER_HIGHER_TAKE_NOTE_END(8.12,8.238,0),
+
+			BLUE_CENTER_LOWER_RING(8.245,0.75946,0),
+			BLUE_CENTER_LOWER_TAKE_NOTE_START(7.689,0.75946,0),
+			BLUE_CENTER_LOWER_TAKE_NOTE_END(8.12,0.75946,0),
+
+
+			// alex new
+
+			// TAKE_START pose rotated using the note center as origin, to the number of degrees - from the center of the speaker looking forward to point to the note
+			/* 
+			BLUE_HIGHER_RING_TAKE_START_OPTIMIZED(
+				TrajectoryHelpers.correctEndingPoseBasedOnNoteLocation(
+					BLUE_HIGHER_RING.getPose(),
+					BLUE_HIGHER_RING_TAKE_START.getPose(),
+					-25+TrajectoryHelpers.rotateToPointToSecondPose(BLUE_SPEAKER_MID.getPose(), BLUE_HIGHER_RING.getPose()).getDegrees()  // angle to point from middle of the speaker to the ring
+				)
+			),
+			BLUE_HIGHER_RING_TAKE_END_OPTIMIZED(
+				TrajectoryHelpers.correctEndingPoseBasedOnNoteLocation(
+					BLUE_HIGHER_RING.getPose(),
+					BLUE_HIGHER_RING_TAKE_END.getPose(),
+					-25+TrajectoryHelpers.rotateToPointToSecondPose(BLUE_SPEAKER_MID.getPose(), BLUE_HIGHER_RING.getPose()).getDegrees()
+				)
+			),
+			BLUE_LOWER_RING_TAKE_START_OPTIMIZED(
+				TrajectoryHelpers.correctEndingPoseBasedOnNoteLocation(
+					BLUE_LOWER_RING.getPose(),
+					BLUE_LOWER_RING_TAKE_START.getPose(),
+					25+TrajectoryHelpers.rotateToPointToSecondPose(BLUE_SPEAKER_MID.getPose(), BLUE_LOWER_RING.getPose()).getDegrees()  // angle to point from middle of the speaker to the ring
+				)
+			),
+			BLUE_LOWER_RING_TAKE_END_OPTIMIZED(
+				TrajectoryHelpers.correctEndingPoseBasedOnNoteLocation(
+					BLUE_LOWER_RING.getPose(),
+					BLUE_LOWER_RING_TAKE_END.getPose(),
+					25+TrajectoryHelpers.rotateToPointToSecondPose(BLUE_SPEAKER_MID.getPose(), BLUE_LOWER_RING.getPose()).getDegrees()
+				)
+			), */
+			BLUE_HIGHER_RING_TAKE_START_OPTIMIZED(2.164,6.433,37.33),
+			BLUE_HIGHER_RING_TAKE_END_OPTIMIZED(2.58,6.774,37.33),
+			BLUE_LOWER_RING_TAKE_START_OPTIMIZED(2.164,4.674,-37.33),
+			BLUE_LOWER_RING_TAKE_END_OPTIMIZED(2.58,4.306,-37.33),
+			
+
+			RED_HIGHER_RING_TAKE_START(fieldSizeX-BLUE_HIGHER_RING_TAKE_START.getPose().getX(), BLUE_HIGHER_RING_TAKE_START.getPose().getY(),180),
+			RED_MID_RING_TAKE_START(fieldSizeX-BLUE_MID_RING_TAKE_START.getPose().getX(), BLUE_MID_RING_TAKE_START.getPose().getY(),180),
+			RED_LOWER_RING_TAKE_START(fieldSizeX-BLUE_LOWER_RING_TAKE_START.getPose().getX(), BLUE_LOWER_RING_TAKE_START.getPose().getY(),180),
+
+			RED_HIGHER_RING_TAKE_END(fieldSizeX-BLUE_HIGHER_RING_TAKE_END.getPose().getX(), BLUE_HIGHER_RING_TAKE_END.getPose().getY(),180),
+			RED_MID_RING_TAKE_END(fieldSizeX-BLUE_MID_RING_TAKE_END.getPose().getX(), BLUE_MID_RING_TAKE_END.getPose().getY(),180),
+			RED_LOWER_RING_TAKE_END(fieldSizeX-BLUE_LOWER_RING_TAKE_END.getPose().getX(), BLUE_LOWER_RING_TAKE_END.getPose().getY(),180),
+
+			/* 
+			// TAKE_START pose rotated using the note center as origin, to the number of degrees - from the center of the speaker looking forward to point to the note
+			RED_HIGHER_RING_TAKE_START_OPTIMIZED(
+				TrajectoryHelpers.correctEndingPoseBasedOnNoteLocation(
+					RED_HIGHER_RING.getPose(),
+					RED_HIGHER_RING_TAKE_START.getPose(),
+					TrajectoryHelpers.rotateToPointToSecondPose(RED_SPEAKER_MID.getPose(), RED_HIGHER_RING.getPose()).getDegrees()  // angle to point from middle of the speaker to the ring
+				)
+			),
+			RED_HIGHER_RING_TAKE_END_OPTIMIZED(
+				TrajectoryHelpers.correctEndingPoseBasedOnNoteLocation(
+					RED_HIGHER_RING.getPose(),
+					RED_HIGHER_RING_TAKE_END.getPose(),
+					TrajectoryHelpers.rotateToPointToSecondPose(RED_SPEAKER_MID.getPose(), RED_HIGHER_RING.getPose()).getDegrees()
+				)
+			),
+			RED_LOWER_RING_TAKE_START_OPTIMIZED(
+				TrajectoryHelpers.correctEndingPoseBasedOnNoteLocation(
+					RED_LOWER_RING.getPose(),
+					RED_LOWER_RING_TAKE_START.getPose(),
+					TrajectoryHelpers.rotateToPointToSecondPose(RED_SPEAKER_MID.getPose(), RED_LOWER_RING.getPose()).getDegrees()  // angle to point from middle of the speaker to the ring
+				)
+			),
+			RED_LOWER_RING_TAKE_END_OPTIMIZED(
+				TrajectoryHelpers.correctEndingPoseBasedOnNoteLocation(
+					RED_LOWER_RING.getPose(),
+					RED_LOWER_RING_TAKE_END.getPose(),
+					TrajectoryHelpers.rotateToPointToSecondPose(RED_SPEAKER_MID.getPose(), RED_LOWER_RING.getPose()).getDegrees()
+				)
+			),
+			*/
+			RED_HIGHER_RING_TAKE_START_OPTIMIZED(fieldSizeX-2.164,6.433,180-37.33),
+			RED_HIGHER_RING_TAKE_END_OPTIMIZED(fieldSizeX-2.58,6.774,180-37.33),
+			RED_LOWER_RING_TAKE_START_OPTIMIZED(fieldSizeX-2.164,4.674,180+37.33),
+			RED_LOWER_RING_TAKE_END_OPTIMIZED(fieldSizeX-2.58,4.306,180+37.33),
+
+			//Constants to pick up far note
+			BLUE_FAR_DRIVE_W1(5.03, 0.453, 0),
+			BLUE_FAR_LOWER_TAKE_START(7.40, 0.453, 0),
+			BLUE_FAR_LOWER_TAKE_END(8.2, 0.453, 0),
+			BLUE_SPEAKER_LOWER_2(1.265, 4.315, -60),
+
+			RED_FAR_DRIVE_W1(fieldSizeX-BLUE_FAR_DRIVE_W1.getPose().getX(), BLUE_FAR_DRIVE_W1.getPose().getY(), 180),
+			RED_FAR_LOWER_TAKE_START(fieldSizeX-BLUE_FAR_LOWER_TAKE_START.getPose().getX(), BLUE_FAR_LOWER_TAKE_START.getPose().getY(), 180),
+			RED_FAR_LOWER_TAKE_END(fieldSizeX-BLUE_FAR_LOWER_TAKE_END.getPose().getX(), BLUE_FAR_LOWER_TAKE_END.getPose().getY(), 180),
+			RED_SPEAKER_LOWER_2(fieldSizeX-BLUE_SPEAKER_LOWER_2.getPose().getX(), BLUE_SPEAKER_LOWER_2.getPose().getY(), -120),
+
+
+			TARGET_NOTE_START(0,0,0),
+			TARGET_NOTE_TAKE_START(0.556,0,0),
+			TARGET_NOTE_TAKE_END(3,0,0)
+			;
+
+			private Pose2d pose;
+
+			autoPoses(double x, double y, double angle) {
+				this.pose = new Pose2d(x, y, Rotation2d.fromDegrees(angle));
+			}
+			autoPoses(Pose2d p) {
+				this.pose = p;
+			}
+			public Pose2d getPose() {
+				return pose;
+			}
+		}
+
+		public static enum centerNotes {	// important poses
+			
+			LOW1 (8.272, 0.753),
+			LOW2 (8.272, 2.411),
+			MID3 (8.272, 4.106),
+			HIGH4 (8.272, 5.782),
+			HIGH5 (8.272, 7.458)
+			;
+
+			private Translation2d translation;
+
+			centerNotes(double x, double y) {
+				this.translation = new Translation2d(x, y);
+			}
+			public Translation2d getTranslation() {
+				return translation;
+			}
+		}
+		
+	}
+
   public static class IMUConstants {
     public static final int kPigeonId = 15;
 
@@ -491,6 +793,73 @@ public final class Constants {
   }
 
   public static final class GPMConstants {
+    public static final class Shooter {
+
+			public static enum ShooterMotorConstantsEnum {
+				LEFTMOTOR( // Front Left - main motor
+						33, // CANID
+						false, // Inversion
+						false // Follower
+				),
+				RIGHTMOTOR( // Front Left
+						34, // CANID
+						true, // Inversion
+						true // Follower
+				);
+
+				private int shooterMotorID; // CAN ID
+				private boolean shooterMotorInverted;
+				private boolean shooterMotorFollower;
+				ShooterMotorConstantsEnum(int cid, boolean i, boolean f) {
+					this.shooterMotorID = cid;
+					this.shooterMotorInverted = i;
+					this.shooterMotorFollower = f;
+				}
+
+				public int getShooterMotorID() {
+					return shooterMotorID;
+				}
+
+				public boolean getShooterMotorInverted() {
+					return shooterMotorInverted;
+				}
+				public boolean getShooterMotorFollower() {
+					return shooterMotorFollower;
+				}
+			}
+			public static final class ShooterPIDConstants {	// PID configuration for shooter motors
+
+				public static final double kP = 0.75;
+				public static final double kI = 0.005;
+				public static final double kD = 0.01;
+				public static final double kF = 0;
+				public static final double kMaxOutput = 1;
+				public static final double Acceleration = 6750; // raw sensor units per 100 ms per second
+				public static final double CruiseVelocity = 6750; // raw sensor units per 100 ms
+				public static final int Smoothing = 3; // CurveStrength. 0 to use Trapezoidal Motion Profile. [1,8] for
+														// S-Curve (greater value yields greater smoothing).
+				public static final double DefaultAcceptableError = 5; // Sensor units
+				public static final double Izone = 500;
+				public static final double PeakOutput = 0.5; // Closed Loop peak output
+				public static final double NeutralDeadband = 0.001;
+				public static final int periodMs = 10; // status frame period
+				public static final int timeoutMs = 30; // status frame timeout
+				public static final int closedLoopPeriod = 1; // 1ms for TalonSRX and locally connected encoder
+
+			}
+			
+			//TODO: Check conversion factors; find the ones that work best with PID
+			public static final double POSITION_CONVERSION_FACTOR = 2*Math.PI;
+			public static final double VELOCITY_CONVERSION_FACTOR = 2*Math.PI/60;
+			public static final double nominalVoltage = 12.0;
+			public static final double positionConversionFactor = 0;
+			public static final double rampRate = 0.25;
+
+			public static final double speedTolerance = 15.0;
+
+			// wait time to consider note leaving the shooter after it's not seen by the intake sensor anymore
+			public static final double SHOOT_TIME_DELAY_AFTER_NOTE_LEAVES = 0.2; 
+		}
 		public static final class Arm {
 
 			public static enum ArmMotorConstantsEnum {
