@@ -19,6 +19,7 @@ import frc.robot.commands.DriveManuallyCommand;
 import frc.robot.commands.IntakeGrabNote;
 import frc.robot.commands.IntakeRun;
 import frc.robot.commands.IntakeStop;
+import frc.robot.commands.NotePickupCamera;
 import frc.robot.commands.RunTrajectorySequenceRobotAtStartPoint;
 import frc.robot.commands.ShootUsingLL;
 import frc.robot.commands.ShootUsingLLAndTurn;
@@ -159,6 +160,12 @@ public class RobotContainer {
         .onFalse(new ShooterStop().andThen(new IntakeStop()).andThen(new ArmHoldCurrentPositionWithPID()));
 
 
+  }
+
+  public void testNotePickup(){
+    new JoystickButton(xboxDriveController, 1) // Button A - double-check
+            .onTrue(new NotePickupCamera())
+            .onFalse(new StopRobot());
   }
 
   private void testAutoOdometry() {
