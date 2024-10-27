@@ -4,11 +4,29 @@
 
 package frc.robot;
 
+import frc.robot.Constants.GPMConstants.Arm;
 import frc.robot.Constants.OIConstants.ControllerDevice;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.SwerveConstants.Intake;
+import frc.robot.commands.ArmDownToIntake;
+import frc.robot.commands.ArmHoldCurrentPositionWithPID;
+import frc.robot.commands.ArmRelease;
+import frc.robot.commands.ArmStop;
+import frc.robot.commands.ArmTurnToAngle;
 import frc.robot.commands.AutonomousTrajectory2Poses;
 import frc.robot.commands.DriveManuallyCommand;
+import frc.robot.commands.IntakeGrabNote;
+import frc.robot.commands.IntakeRun;
+import frc.robot.commands.IntakeStop;
 import frc.robot.commands.RunTrajectorySequenceRobotAtStartPoint;
+import frc.robot.commands.ShootUsingLL;
+import frc.robot.commands.ShootUsingLLAndTurn;
+import frc.robot.commands.ShooterStop;
+import frc.robot.commands.ShootingAmpPostSequence;
+import frc.robot.commands.ShootingAmpPreSequence;
+import frc.robot.commands.ShootingAmpSequence;
+import frc.robot.commands.ShootingGPM0Sequence;
+import frc.robot.commands.ShootingSequenceManual;
 import frc.robot.commands.StopRobot;
 import frc.robot.commands.TurnToRelativeAngleSoftwarePIDCommand;
 import frc.robot.lib.GPMHelpers;
@@ -24,6 +42,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -38,9 +57,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public static Controller xboxDriveController;
+  public static Controller xboxGPMController;
 
-  public static final ArmSubsystem armSubsystem = new ArmSubsystem();
   public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
+  public static final ArmSubsystem armSubsystem = new ArmSubsystem();
   public static final SmartDashboardSubsystem smartDashboardSubsystem = new SmartDashboardSubsystem();
   public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
@@ -67,11 +87,11 @@ public class RobotContainer {
       // Configure the trigger bindings
     configureBindings();
 
-     driveSubsystem.setDefaultCommand(
-        new DriveManuallyCommand(
-            () -> getDriverXAxis(),
-            () -> getDriverYAxis(),
-            () -> getDriverOmegaAxis()));
+    //  driveSubsystem.setDefaultCommand(
+    //     new DriveManuallyCommand(
+    //         () -> getDriverXAxis(),
+    //         () -> getDriverYAxis(),
+    //         () -> getDriverOmegaAxis()));
   }
 
 
@@ -88,11 +108,55 @@ public class RobotContainer {
   private void configureBindings() {
     // testAutoOdometry();
     // testCharacterization();
-    testTurn();
+    //testTurn();
+    allTestCommandsGPM();
+    testAutoOdometry();
+    allTestCommandsDrive();
+
   }
 
   private void configureDriverInterface(){
     xboxDriveController = new Controller(ControllerDevice.XBOX_CONTROLLER);
+    xboxGPMController = new Controller(ControllerDevice.XBOX_CONTROLLER_GPM);
+  }
+
+  private void allTestCommandsDrive() {
+    // R2 on driver xbox - intake grab note
+    new Trigger(() -> xboxDriveController.getRawAxis(3) > 0.3)
+        .onTrue(new IntakeGrabNote().
+            alongWith
+                (
+                    (new ArmTurnToAngle(() -> Arm.ARM_INTAKE_ANGLE)
+                            .until(intakeSubsystem::isIntakeDown))
+                        .andThen(new ArmRelease())
+                ))
+        .onFalse(new IntakeStop().andThen(new ArmRelease()));
+
+    new Trigger(() -> xboxDriveController.getRawAxis(2) > 0.3) // L2 trigger - spit out note
+        .onTrue(new IntakeRun(Intake.INTAKE_NOTE_SPEW_POWER))
+        .onFalse(new IntakeStop());
+  }
+
+  private void allTestCommandsGPM() {
+    new JoystickButton(xboxGPMController, 9)    // Button Y
+        .onTrue(new ArmDownToIntake())
+        .onFalse(new ArmRelease());
+
+        // L1 + L-UP = run arm UP manually 0.5 speed
+    new Trigger(() -> (xboxGPMController.getRawButton(5) && (xboxGPMController.getRawAxis(1) < -0.3)))
+        .onTrue(new StartEndCommand(() -> armSubsystem.runArmMotors(0.5) ,
+            () -> {    double currentPosition = RobotContainer.armSubsystem.getArmEncoderLeader();
+                RobotContainer.armSubsystem.stopArmMotors();
+                RobotContainer.armSubsystem.setArmMotorEncoder(currentPosition);} ,
+            armSubsystem))
+        .onFalse(new ArmHoldCurrentPositionWithPID());
+
+    // Manual shooting with 0-distance power; no arm - pivot it separately
+    new Trigger(() -> (xboxGPMController.getRawButton(5) && (xboxGPMController.getRawAxis(2) > 0.3) ) )
+        .onTrue(new ShootingSequenceManual()) // Manual shooting sequence - 2m parameters
+        .onFalse(new ShooterStop().andThen(new IntakeStop()).andThen(new ArmHoldCurrentPositionWithPID()));
+
+
   }
 
   private void testAutoOdometry() {
