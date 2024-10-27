@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,6 +21,7 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
   private double heightOfCamera = 0.232;
   private double cameraPitchOffset = 2.519;
   private double centerOfRobotToCamera = 0.28;
+  private PhotonPipelineResult currentTarget;
 
   /** Creates a new PhotonVisionNoteHuntingSubsystem. */
   public PhotonVisionNoteHuntingSubsystem(String cameraName) {
@@ -37,15 +39,22 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
   }
 
   public boolean isNoteDetected() {
+    return currentTarget==null && currentTarget.hasTargets();
+  }
 
-    //if (!cameraConnected) {
-    //  return false;
-    //}
+  private void updateCurrentNote(){
     try {
-      var result = camera.getLatestResult();
-      return cameraConnected && result.hasTargets(); // if camera is not connected, return FALSE
+      if(cameraConnected){
+        var result = camera.getAllUnreadResults();
+        if(!result.isEmpty()){
+          currentTarget = result.get(result.size()-1);
+        } else {
+          currentTarget = null;
+        }
+      } else{
+        currentTarget = null;
+      }
     } catch (Exception e) {
-      return false;
     }
   }
 
@@ -56,12 +65,11 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
     //}
 
     try {
-      var result = camera.getLatestResult();
 
-      if (!result.hasTargets()) { // I do not see notes return 0 angle
+      if (!isNoteDetected()) { // I do not see notes return 0 angle
         return 0;
       }
-      PhotonTrackedTarget target = result.getBestTarget();
+      PhotonTrackedTarget target = currentTarget.getBestTarget();
       return -target.getYaw(); // getYaw here returns positive right
     } catch (Exception e) {
       return 0;
@@ -76,12 +84,11 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
     //}
 
     try {
-      var result = camera.getLatestResult();
 
-      if (!result.hasTargets()) { // I do not see notes return 0 angle
+      if (!isNoteDetected()) { // I do not see notes return 0 angle
         return 0;
       }
-      PhotonTrackedTarget target = result.getBestTarget();
+      PhotonTrackedTarget target = currentTarget.getBestTarget();
       return target.getPitch(); 
     } catch (Exception e) {
       return 0;
@@ -96,12 +103,11 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
     //}
 
     try {
-      var result = camera.getLatestResult();
 
-      if (!result.hasTargets()) { // I do not see notes return 0 angle
+      if (!isNoteDetected()) { // I do not see notes return 0 angle
         xAngleToNoteSaved = Double.NaN;
       }
-      PhotonTrackedTarget target = result.getBestTarget();
+      PhotonTrackedTarget target = currentTarget.getBestTarget();
       xAngleToNoteSaved = -target.getYaw(); // getYaw here returns positive right
     } catch (Exception e) {
         xAngleToNoteSaved = Double.NaN;
@@ -116,13 +122,12 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
     //}
 
     try {
-      var result = camera.getLatestResult();
 
-      if (!result.hasTargets()) { // I do not see notes return 0 angle
+      if (!isNoteDetected()) { // I do not see notes return 0 angle
         xAngleToNoteSaved = Double.NaN;
         yAngleToNoteSaved = Double.NaN;
       }
-      PhotonTrackedTarget target = result.getBestTarget();
+      PhotonTrackedTarget target = currentTarget.getBestTarget();
       xAngleToNoteSaved = -target.getYaw(); // getYaw here returns negative right
       yAngleToNoteSaved = target.getPitch();
     } catch (Exception e) {
@@ -174,5 +179,6 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    updateCurrentNote();
   }
 }
