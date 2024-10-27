@@ -8,6 +8,7 @@ import frc.robot.Constants.GPMConstants.Arm;
 import frc.robot.Constants.OIConstants.ControllerDevice;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants.Intake;
+import frc.robot.Constants.VisionConstants.PhotonVisionConstants;
 import frc.robot.commands.ArmDownToIntake;
 import frc.robot.commands.ArmHoldCurrentPositionWithPID;
 import frc.robot.commands.ArmRelease;
@@ -34,6 +35,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LLVisionSubsystem;
+import frc.robot.subsystems.PhotonVisionNoteHuntingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SmartDashboardSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -58,9 +60,9 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public static Controller xboxDriveController;
   public static Controller xboxGPMController;
-
   public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
   public static final ArmSubsystem armSubsystem = new ArmSubsystem();
+  public static final PhotonVisionNoteHuntingSubsystem photonVisionNoteHuntingSubsystem = new PhotonVisionNoteHuntingSubsystem(PhotonVisionConstants.NoteCameraName);
   public static final SmartDashboardSubsystem smartDashboardSubsystem = new SmartDashboardSubsystem();
   public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
