@@ -66,16 +66,18 @@ public class TurnToRelativeAngleTrapezoidProfile extends Command {
     double ff = ppc.calculate(angleSupplier.getAsDouble());
     ff=(ff>=0)?MathUtil.clamp(ff,minFeedForward*kMaxSpeed, kMaxSpeed):MathUtil.clamp(ff,-kMaxSpeed, -minFeedForward*kMaxSpeed);
     //RobotContainer.driveSubsystem.drive(0,0,ff);
-    System.out.println("FF:"+ff);
+    //System.out.println("FF:"+ff);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    System.out.println("Turn To Angle Is Done: " + interrupted);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return ppc.atGoal();
   }
 }

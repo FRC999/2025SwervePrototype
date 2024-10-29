@@ -36,8 +36,7 @@ public class NotePickupCamera extends SequentialCommandGroup {
         , Set.of()),
 
       new DeferredCommand(
-        () -> new TurnToRelativeAngleSoftwarePIDCommand(
-          () -> Rotation2d.fromDegrees(
+        () -> new TurnToRelativeAngleTrapezoidProfile(
             RobotContainer.photonVisionNoteHuntingSubsystem.angleToTurnToNote(
               RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved()
             , 
@@ -45,7 +44,8 @@ public class NotePickupCamera extends SequentialCommandGroup {
                 RobotContainer.photonVisionNoteHuntingSubsystem.getyAngleToNoteSaved(),
                 RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved())
             )
-          )
+        , 
+        () -> RobotContainer.driveSubsystem.getYaw()
         )  
       , Set.of()),
 
@@ -74,7 +74,7 @@ public class NotePickupCamera extends SequentialCommandGroup {
         new PrintCommand("No Note Visible"),
         () -> RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved() != Double.NaN),
 
-    // cleanup
+    cleanup
     new StopChassis(), // stop trajectory
     new ShooterStop(), // stop shooter
     new IntakeStop(), // stop intake

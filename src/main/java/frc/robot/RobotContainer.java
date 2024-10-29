@@ -90,11 +90,11 @@ public class RobotContainer {
       // Configure the trigger bindings
     configureBindings();
 
-    //  driveSubsystem.setDefaultCommand(
-    //     new DriveManuallyCommand(
-    //         () -> getDriverXAxis(),
-    //         () -> getDriverYAxis(),
-    //         () -> getDriverOmegaAxis()));
+     driveSubsystem.setDefaultCommand(
+        new DriveManuallyCommand(
+            () -> getDriverXAxis(),
+            () -> getDriverYAxis(),
+            () -> getDriverOmegaAxis()));
   }
 
 
@@ -112,9 +112,10 @@ public class RobotContainer {
     // testAutoOdometry();
     // testCharacterization();
     //testTurn();
-    allTestCommandsGPM();
-    testAutoOdometry();
-    allTestCommandsDrive();
+    // allTestCommandsGPM();
+    // testAutoOdometry();
+    // allTestCommandsDrive();
+    testNotePickup();
 
   }
 
