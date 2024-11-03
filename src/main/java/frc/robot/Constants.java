@@ -589,6 +589,7 @@ public final class Constants {
 			public static final String NoteCameraName = "Arducam_OV9782_USB_Camera";
 			// Camera position from center of the chassis / floor (for Z) point of view; it's looking backwards
 			public static final Transform2d robotToCam = new Transform2d(new Translation2d(0.22, 0.25), Rotation2d.fromDegrees(180));
+			public static final double yawOffSet = 13.782;
 
 		}
 	}
@@ -939,7 +940,7 @@ public final class Constants {
 			public static final double ARM_INTAKE_ANGLE = -83.0;
 			public static final double ARM_AMP_ANGLE = 15.0;
 			public static final double ARM_NOTE_VISION_ANGLE = -69.0;	//BASED ON TESTING MAR 11
-			public static final double ARM_NOTE_VISION_ANGLE_FOR_AUTO_NOTE_PICKUP = -64.0;	//BASED ON TESTING MAR 11
+			public static final double ARM_NOTE_VISION_ANGLE_FOR_AUTO_NOTE_PICKUP = -55.0;	//BASED ON TESTING MAR 11
 			public static final double ARM_CLIMB_ANGLE = 0;	//TODO: test this
 			public static final double ARM_IMU_RESET_ANGLE = -82.0;
 

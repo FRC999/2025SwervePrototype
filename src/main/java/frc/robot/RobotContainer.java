@@ -31,6 +31,7 @@ import frc.robot.commands.ShootingGPM0Sequence;
 import frc.robot.commands.ShootingSequenceManual;
 import frc.robot.commands.StopRobot;
 import frc.robot.commands.TurnToRelativeAngleSoftwarePIDCommand;
+import frc.robot.commands.TurnToRelativeAngleTrapezoidProfile;
 import frc.robot.lib.GPMHelpers;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -166,6 +167,10 @@ public class RobotContainer {
   public void testNotePickup(){
     new JoystickButton(xboxDriveController, 1) // Button A - double-check
             .onTrue(new NotePickupCamera())
+            .onFalse(new StopRobot());
+    
+    new JoystickButton(xboxDriveController, 2) // Button A - double-check
+            .onTrue(new TurnToRelativeAngleTrapezoidProfile(20, () -> driveSubsystem.getYaw()))
             .onFalse(new StopRobot());
   }
 
