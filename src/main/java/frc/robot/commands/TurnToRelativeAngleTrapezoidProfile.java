@@ -20,8 +20,8 @@ import frc.robot.Constants.SwerveConstants.SwerveChassis;
 public class TurnToRelativeAngleTrapezoidProfile extends Command {
 
 // Software PID turn constants
-	private final double kP = 0.15958;
-  //private final double kP = 0.015958;
+	//private final double kP = 0.15958;
+  private final double kP = 0.11958;
 	private final double kI = 0.02;
 	private final double kD = 0.0;
 	private final double minOmega = 0.37;

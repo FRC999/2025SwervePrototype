@@ -6,12 +6,16 @@ package frc.robot.commands;
 
 import java.util.Set;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants.autoPoses;
@@ -36,18 +40,47 @@ public class NotePickupCamera extends SequentialCommandGroup {
         , Set.of()),
 
       new DeferredCommand(
-        () -> new TurnToRelativeAngleTrapezoidProfile(
-            RobotContainer.photonVisionNoteHuntingSubsystem.angleToTurnToNote(
-              RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved()
-            , 
-              RobotContainer.photonVisionNoteHuntingSubsystem.fromCameraToTarget(
-                RobotContainer.photonVisionNoteHuntingSubsystem.getyAngleToNoteSaved(),
-                RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved())
-            )
-        , 
-        () -> RobotContainer.driveSubsystem.getYaw()
-        )  
-      , Set.of()),
+        ()-> new ConditionalCommand(
+          new TurnToRelativeAngleTrapezoidProfile(
+              RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved(), 
+              ()->RobotContainer.driveSubsystem.getYaw())
+              .andThen(
+                new ParallelDeadlineGroup(
+                  // new PrintCommand("Driving for "+ RobotContainer.photonVisionNoteHuntingSubsystem.fromCameraToTargetSaved())
+                  //   .andThen(new WaitCommand(3.0)),
+                  new AutonomousTrajectory2Poses(
+                    new Pose2d(),
+                    new Pose2d(
+                      RobotContainer.photonVisionNoteHuntingSubsystem.fromCameraToTargetSaved(),
+                      0,
+                      new Rotation2d()
+                    ),
+                    2.5,
+                    1.5
+                  ),
+                  new ArmDownToIntake(),
+                  new IntakeGrabNote()
+                )
+              ), 
+          new PrintCommand("Cannot see note"), 
+          ()-> !Double.isNaN(RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved())
+        ),
+        Set.of()
+      ),
+
+      // new DeferredCommand(
+      //   () -> new TurnToRelativeAngleTrapezoidProfile(
+      //       RobotContainer.photonVisionNoteHuntingSubsystem.angleToTurnToNote(
+      //         RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved()
+      //       , 
+      //         RobotContainer.photonVisionNoteHuntingSubsystem.fromCameraToTarget(
+      //           RobotContainer.photonVisionNoteHuntingSubsystem.getyAngleToNoteSaved(),
+      //           RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved())
+      //       )
+      //   , 
+      //   () -> RobotContainer.driveSubsystem.getYaw()
+      //   )  
+      // , Set.of()),
 
         /*
       new ConditionalCommand( // only shoot if picked up the note
@@ -73,15 +106,12 @@ public class NotePickupCamera extends SequentialCommandGroup {
 
         new PrintCommand("No Note Visible"),
         () -> RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved() != Double.NaN),
-
-    cleanup
-    new StopChassis(), // stop trajectory
-    new ShooterStop(), // stop shooter
-    new IntakeStop(), // stop intake
-    new ControllerRumbleStop(),
     */
-    new PrintCommand("Note Pickup Command Done")
-
+    //cleanup
+    new StopRobot(), // stop trajectory
+    new ShooterStop(), // stop shooter
+    new IntakeStop() // stop intake
+  
     );
   }
 }

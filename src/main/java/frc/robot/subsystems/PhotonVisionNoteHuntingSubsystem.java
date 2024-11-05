@@ -10,6 +10,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.EnabledSubsystems;
+import frc.robot.Constants.VisionConstants.PhotonVisionConstants;
 
 public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
 
@@ -126,13 +127,15 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
       if (!isNoteDetected()) { // I do not see notes return 0 angle
         xAngleToNoteSaved = Double.NaN;
         yAngleToNoteSaved = Double.NaN;
+        System.out.println(" Note Not Detected ");
       }
       PhotonTrackedTarget target = currentTarget.getBestTarget();
-      xAngleToNoteSaved = -target.getYaw(); // getYaw here returns negative right
+      xAngleToNoteSaved = -target.getYaw() + PhotonVisionConstants.yawOffSet; // getYaw here returns negative right
       yAngleToNoteSaved = target.getPitch();
     } catch (Exception e) {
         xAngleToNoteSaved = Double.NaN;
         yAngleToNoteSaved = Double.NaN;
+        System.out.println(" Exception Detecting Note ");
     }
 
   }
@@ -157,6 +160,10 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
 
   public void resetYAngleToNoteSaved() {
     yAngleToNoteSaved = 0;
+  }
+
+  public double fromCameraToTargetSaved(){
+    return fromCameraToTarget(yAngleToNoteSaved, xAngleToNoteSaved);
   }
 
   public double fromCameraToTarget(double pitch, double yaw) {

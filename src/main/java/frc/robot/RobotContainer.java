@@ -113,7 +113,7 @@ public class RobotContainer {
     // testAutoOdometry();
     // testCharacterization();
     //testTurn();
-    // allTestCommandsGPM();
+    //allTestCommandsGPM();
     // testAutoOdometry();
     // allTestCommandsDrive();
     testNotePickup();
@@ -124,6 +124,7 @@ public class RobotContainer {
     xboxDriveController = new Controller(ControllerDevice.XBOX_CONTROLLER);
     xboxGPMController = new Controller(ControllerDevice.XBOX_CONTROLLER_GPM);
   }
+  
 
   private void allTestCommandsDrive() {
     // R2 on driver xbox - intake grab note
@@ -169,9 +170,12 @@ public class RobotContainer {
             .onTrue(new NotePickupCamera())
             .onFalse(new StopRobot());
     
-    new JoystickButton(xboxDriveController, 2) // Button A - double-check
+    new JoystickButton(xboxDriveController, 2) // Button B - double-check
             .onTrue(new TurnToRelativeAngleTrapezoidProfile(20, () -> driveSubsystem.getYaw()))
             .onFalse(new StopRobot());
+    new Trigger(() -> xboxDriveController.getRawAxis(2) > 0.3) // L2 trigger - spit out note
+            .onTrue(new IntakeRun(Intake.INTAKE_NOTE_SPEW_POWER))
+            .onFalse(new IntakeStop());
   }
 
   private void testAutoOdometry() {
