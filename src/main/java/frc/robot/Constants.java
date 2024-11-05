@@ -590,7 +590,7 @@ public final class Constants {
 			// Camera position from center of the chassis / floor (for Z) point of view; it's looking backwards
 			public static final Transform2d robotToCam = new Transform2d(new Translation2d(0.22, 0.25), Rotation2d.fromDegrees(180));
 			//public static final double yawOffSet = 13.782;
-			public static final double yawOffSet = 8.0;
+			public static final double yawOffSet = 5.0;
 			
 
 		}

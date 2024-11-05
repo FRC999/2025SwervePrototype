@@ -42,22 +42,25 @@ public class NotePickupCamera extends SequentialCommandGroup {
       new DeferredCommand(
         ()-> new ConditionalCommand(
           new TurnToRelativeAngleTrapezoidProfile(
-              RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved(), 
+              RobotContainer.photonVisionNoteHuntingSubsystem.angleToTurnToNote(
+                    RobotContainer.photonVisionNoteHuntingSubsystem.getxAngleToNoteSaved(),
+                    RobotContainer.photonVisionNoteHuntingSubsystem.fromCameraToTargetSaved()
+              ), 
               ()->RobotContainer.driveSubsystem.getYaw())
               .andThen(
                 new ParallelDeadlineGroup(
-                  // new PrintCommand("Driving for "+ RobotContainer.photonVisionNoteHuntingSubsystem.fromCameraToTargetSaved())
-                  //   .andThen(new WaitCommand(3.0)),
-                  new AutonomousTrajectory2Poses(
-                    new Pose2d(),
-                    new Pose2d(
-                      RobotContainer.photonVisionNoteHuntingSubsystem.fromCameraToTargetSaved(),
-                      0,
-                      new Rotation2d()
-                    ),
-                    2.5,
-                    1.5
-                  ),
+                  new PrintCommand("Driving for "+ RobotContainer.photonVisionNoteHuntingSubsystem.fromCameraToTargetSaved())
+                    .andThen(new WaitCommand(3.0)),
+                  // new AutonomousTrajectory2Poses(
+                  //   new Pose2d(),
+                  //   new Pose2d(
+                  //     RobotContainer.photonVisionNoteHuntingSubsystem.fromCameraToTargetSaved(),
+                  //     0,
+                  //     new Rotation2d()
+                  //   ),
+                  //   2.5,
+                  //   1.5
+                  // ),
                   new ArmDownToIntake(),
                   new IntakeGrabNote()
                 )
