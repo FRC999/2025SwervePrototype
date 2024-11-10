@@ -20,7 +20,8 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
   private double yAngleToNoteSaved = 0;
 
   private double heightOfCamera = 0.232;
-  private double cameraPitchOffset = 2.519;
+  //private double cameraPitchOffset = 2.519;
+  private double cameraPitchOffset = 1.9;
   private double centerOfRobotToCamera = 0.28;
   private PhotonPipelineResult currentTarget;
 
@@ -171,14 +172,15 @@ public class PhotonVisionNoteHuntingSubsystem extends SubsystemBase {
     double yawForCalculation = Math.toRadians(Math.abs(yaw));
 
     double targetHorizontalDistance = heightOfCamera/Math.tan(alpha);
+    //System.out.println("THD: " + targetHorizontalDistance);
 
     return targetHorizontalDistance/Math.cos(yawForCalculation);
   }
 
   public double angleToTurnToNote(double yaw, double distance) {
     double alpha = Math.toRadians(180 - yaw);
-    double centerOfRobotToTarget = Math.pow(centerOfRobotToCamera, 2) + Math.pow(distance, 2) - 
-    2*centerOfRobotToCamera*distance*Math.cos(alpha);
+    double centerOfRobotToTarget = Math.sqrt(Math.pow(centerOfRobotToCamera, 2) + Math.pow(distance, 2) - 
+    2*centerOfRobotToCamera*distance*Math.cos(alpha));
     double beta = Math.toDegrees(Math.asin((Math.sin(alpha)*distance)/centerOfRobotToTarget));
     return beta;
   }
