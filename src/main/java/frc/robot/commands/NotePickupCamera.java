@@ -58,7 +58,7 @@ public class NotePickupCamera extends SequentialCommandGroup {
               .andThen(
                 new ParallelDeadlineGroup(
                   new PrintCommand("Driving for "+ RobotContainer.photonVisionNoteHuntingSubsystem.fromCameraToTargetSaved())
-                    .andThen(new WaitCommand(1.0)),
+                    .andThen(new WaitCommand(3.0)),
                   new AutonomousTrajectory2Poses(
                     new Pose2d(),
                     new Pose2d(
